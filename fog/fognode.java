@@ -4,7 +4,7 @@ import java.net.*;
 import java.io.*;
 
 public class FogNode {
-    private int port;
+    private ServerSocket serverSocket;
 
     private static class Predictor {
         // TODO 
@@ -13,30 +13,47 @@ public class FogNode {
     @Scope("prototype")
     // Runnable class to listen for new connections
     private static class ListenerRunnable implements Runnable{
-        public MyRunnable(){
-            
-        }
-
         @Override
         public void run(){
+            while(true){
+                Socket clientSocket = serverSocket.accept();
 
+                ClientHandler handler = new ClientHandler(clientSocket);
+                Thread clientThread = new Thread(handler).start();
+            }
         }
     }
 
     @Scope("prototype")
     // Runnable class to communicate with clients after connection
-    private static class ServerRunnable implements Runnable{
-        public MyRunnable(Object parameter){
-        
+    private static class ClientHandler implements Runnable{
+        private Socket clientSocket;
+
+        public ClientHandler(Socket clientSocket){
+            this.clientSocket = clientSocket;
         }
 
         @Override
         public void run(){
+            PrintWriter out = new PrintWriter(clientSocket.getOutStream(), true);
+            Bufferedreader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
+            String inputLine;
+            while((inputLine = in.readLine()) != null){
+                // TODO 
+            }
+        }
+
+        @After
+        public void tearDown(){
+            clientSocket.stopConnection();
         }
     }
 
     public FogNode(int port){
-        this.port = port;
+        ServerSocket serverSocket = new ServerSocket(port);
+
+        ListenerRunnable listener = new ListenerRunnable();
+        Thread t = new Thread(listener).start();
     }
 }
