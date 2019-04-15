@@ -4,18 +4,10 @@ package foghandoff;
 option java_package = "foghandoff.fog";
 option java_outer_classname = "FogMessages";
 
-message NewMessage {
-	
-}
-
 message AcceptMessage {
 	required string id = 1;
 	required string assignedId = 2;
 	required int32 jobPort = 3;
-}
-
-message KillMessage {
-	required string id = 1;
 }
 
 message JobMessage {
@@ -26,6 +18,7 @@ message JobMessage {
 		Job1 = 0;
 		Job2 = 1;
 		Job3 = 2;
+		KILL = 3;
 	}
 }
 
