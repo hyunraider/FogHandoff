@@ -5,13 +5,13 @@ option java_package = "foghandoff.fog";
 option java_outer_classname = "FogMessages";
 
 message Location {
-	required float longitude = 1;
-	required float latitude = 2;
+	required double longitude = 1;
+	required double latitude = 2;
 }
 
 message Velocity {
-	required float xComponent = 1;
-	required float yComponent = 2;
+	required double x = 1;
+	required double y = 2;
 	required float speed = 3;
 }
 
