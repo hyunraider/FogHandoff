@@ -9,6 +9,7 @@ import android.util.Log;
 import android.net.wifi.WifiConfiguration;
 
 import java.util.List;
+import java.lang.Math;
 
 public class DumbHandoffModule implements Runnable {
 
@@ -16,6 +17,8 @@ public class DumbHandoffModule implements Runnable {
     private WifiManager wifi;
     private List<ScanResult> results;
     private final int HANDOFF_PORT = 9003;
+    private int trigger_threshold = 5;
+    private final String PREFIX = "cs538";
 
     public DumbHandoffModule(Context c){
         this.context = c;
@@ -44,7 +47,6 @@ public class DumbHandoffModule implements Runnable {
 
     private boolean connectToWifi(String ssid) {
 
-
         wifi = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         if (!wifi.isWifiEnabled()){
@@ -66,9 +68,10 @@ public class DumbHandoffModule implements Runnable {
         int old = wifi.getConnectionInfo().getNetworkId();
 
         if (netId == -1) {
-            Log.d("NOOOO", "WAYYYYY");
+            Log.d("WIFI STATUS", "ALREADY EXISTS");
+            netId = getExistingNetworkId(wifiConf.SSID);
         }
-        Log.d("WIFI STATUS", "" + netId);
+        Log.d("NEW WIFI CODE", "" + netId);
         Log.d("OLD WIFI CODE", "" + old);
         wifi.disconnect();
         wifi.disableNetwork(old);
@@ -77,22 +80,10 @@ public class DumbHandoffModule implements Runnable {
         return true;
     }
 
-    private void assignHighestPriority(WifiConfiguration config) {
-        List<WifiConfiguration> configuredNetworks = wifi.getConfiguredNetworks();
-        if (configuredNetworks != null) {
-            for (WifiConfiguration existingConfig : configuredNetworks) {
-                if (config.priority <= existingConfig.priority) {
-                    config.priority = existingConfig.priority + 1;
-                }
-            }
-        }
-    }
-
     private int getExistingNetworkId(String SSID) {
         List<WifiConfiguration> configuredNetworks = wifi.getConfiguredNetworks();
         if (configuredNetworks != null) {
             for (WifiConfiguration existingConfig : configuredNetworks) {
-
                 if (existingConfig.SSID.equals(SSID)) {
                     return existingConfig.networkId;
                 }
@@ -107,19 +98,37 @@ public class DumbHandoffModule implements Runnable {
             results = wifi.getScanResults();
             context.unregisterReceiver(this);
             Log.d("IN", "Class");
-            for (ScanResult scanResult : results) {
-                Log.d("WIFI INFO", scanResult.SSID + ":" + scanResult.level);
 
-                if (scanResult.SSID.toLowerCase().contains("bae")) {
-                    Log.d("WIFI INFO", "Matches" + scanResult.SSID);
-                    Log.d("WIFI CAPS", scanResult.capabilities);
-                    connectToWifi(scanResult.SSID);
-                    break;
-                }
+            String new_ssid = checkTrigger();
+            if (new_ssid != "") {
+                //send out updates
+
             }
-
-
         }
     };
+
+    private String checkTrigger(){
+        String curr_SSID = wifi.getConnectionInfo().getSSID();
+        int old_signal = wifi.getConnectionInfo().getRssi();
+
+        String best_SSID = curr_SSID;
+        int max_strength = -100000;
+        for (ScanResult scanResult : results) {
+            if (scanResult.SSID.toLowerCase().contains(PREFIX)) {
+                Log.d("WIFI INFO", scanResult.SSID + ":" + scanResult.level);
+                if (scanResult.level > max_strength) {
+                    best_SSID = scanResult.SSID;
+                }
+            }
+        }
+
+        if (max_strength > old_signal && Math.abs(max_strength - old_signal) > trigger_threshold) {
+            //trigger handoff
+            Log.d("WIFI INFO", "Triggering Handoff");
+            connectToWifi(best_SSID);
+            return best_SSID;
+        }
+        return "";
+    }
 
 }
