@@ -22,8 +22,6 @@ public class Main {
             predictor = ctx.getBean(CloudPredictor.class);
         } else if (predictorType == "smart"){
             predictor = ctx.getBean(SmartPredictor.class);
-        } else if (predictorType == "dumb"){
-            predictor = ctx.getBean(DumbPredictor.class);
-        } 
+        }
 	}
 }

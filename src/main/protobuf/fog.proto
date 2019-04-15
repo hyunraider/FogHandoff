@@ -25,4 +25,6 @@ message JobMessage {
 message ResultMessage {
 	required string id = 1;
 	required string jobId = 2;
+	required int timeStep = 3;
+	repeated float accelValues = 4;
 }

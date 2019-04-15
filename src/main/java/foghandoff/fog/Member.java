@@ -14,9 +14,7 @@ import java.time.Instant;
 public class Member implements Serializable {
    private String id;
    // Needed for Spring to not complain.
-   public Member() {
-
-   }
+   public Member() {}
    public String toString() {
    		return id;
    }

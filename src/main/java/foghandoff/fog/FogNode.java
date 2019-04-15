@@ -32,8 +32,9 @@ public class FogNode {
         private Socket clientSocket;
         private DataInputStream in;
         private DataOutputStream out;
-        private HashSet<Integer> jobList;
     	private int lamportId;
+    	private AtomicBoolean isProcessing;
+    	private int currJobId;
 
     	/**
     	* Sends a AcceptMessage to the client to alert it of the job port and their assigned lamport ID
@@ -54,7 +55,7 @@ public class FogNode {
         public ClientHandler(Socket clientSocket, int id){
             this.clientSocket = clientSocket;
             this.id = lamportId;
-            this.jobList = new HashSet<>();
+            this.isProcessing = new AtomicBoolean(false);
         }
 
         @Override
@@ -70,9 +71,38 @@ public class FogNode {
 		            int length = in.readInt();
 		            byte[] response  = new byte[length];
 		            in.readFully(response);
-		            JobMessage.parseFrom(response)
+		            JobMessage msg = JobMessage.parseFrom(response)
 
 		            /* TODO some action based off of the job type */
+		            switch(msg.getType()) {
+		            	// Kill Any Existing Job Threads Immediately and Grab their return value
+		            	case KILL:
+		            		// If there is a currently runnning job, kill it and send the results to the client
+		            		if(isProcessing.get()) {
+		            			var messageBuilder = ResultMessage.newBuilder()
+		            				.setId() /* TODO */
+		            				.setJobId(this.currJobId)
+		            				.setTimeStep() /* TODO */
+		            				.setAccelValues();
+		            			byte[] resultMsg = messageBuilder.build().toByteArray();
+		            			out.writeInt(resultMsg.length);
+		            			out.write(resultMsg);
+		            			return;
+		            		}
+		            		// Otherwise directly send an acknowledgement to the edge device and shut down
+		            		else {
+		            			out.sendInt(-1);
+		            			return;
+		            		}
+		 
+			           	// Create a new Job for processing and add its metadata
+		            	case JOB:
+		            		// Read in data for the job
+		            		currJobId = msg.getJobId();
+		            		/* TODO */
+
+		            	default: throw new RuntimeException("Invalid Message Type");
+		            }
 		        }
 	        } catch(IOException e) {
 	        	// We assume that IOException means that the client is dead and clean up appropriately
