@@ -1,0 +1,42 @@
+syntax = "proto2";
+package foghandoff;
+
+option java_package = "foghandoff.fog";
+option java_outer_classname = "FogMessages";
+
+message Location {
+	required float longitude = 1;
+	required float latitude = 2;
+}
+
+message Velocity {
+	required float xComponent = 1;
+	required float yComponent = 2;
+	required float speed = 3;
+}
+
+message AcceptMessage {
+	required string id = 1;
+	required string assignedId = 2;
+	required int32 jobPort = 3;
+}
+
+message KillMessage {
+	required string id = 1;
+}
+
+message JobMessage {
+	required string id = 1;
+	required string jobId = 2;
+	required JobType type = 3;
+	enum JobType {
+		Job1 = 0;
+		Job2 = 1;
+		Job3 = 2;
+	}
+}
+
+message ResultMessage {
+	required string id = 1;
+	required string jobId = 2;
+}

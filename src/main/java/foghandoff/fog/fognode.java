@@ -5,10 +5,7 @@ import java.io.*;
 
 public class FogNode {
     private ServerSocket serverSocket;
-
-    private static class Predictor {
-        // TODO 
-    }
+    private Predictor predictor;
 
     @Scope("prototype")
     // Runnable class to listen for new connections
@@ -50,8 +47,15 @@ public class FogNode {
         }
     }
 
-    public FogNode(int port){
+    public FogNode(@Value("${serverPort}")int port, @Value("${predictorType}")String predictorType){
         ServerSocket serverSocket = new ServerSocket(port);
+        if(predictorType == "cloud"){
+            predictor = new CloudPredictor();
+        } else if (predictorType == "smart"){
+            predictor = new SmartPredictor();
+        } else if (predictorType == "dumb"){
+            predictor = new DumbPredictor();
+        }
 
         ListenerRunnable listener = new ListenerRunnable();
         Thread t = new Thread(listener).start();
