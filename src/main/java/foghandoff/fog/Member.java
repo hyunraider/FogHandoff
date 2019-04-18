@@ -1,3 +1,5 @@
+package foghandoff.fog;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Member implements Serializable {
    private String id;
+   private String latitude;
+   private String longitude;
    // Needed for Spring to not complain.
    public Member() {}
    public String toString() {

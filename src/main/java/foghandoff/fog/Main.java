@@ -10,12 +10,15 @@ public class Main {
 	
 	// Persistent Components for our Fog Node
 	private static FogNode fogNode;
+	private static MembershipList membershipList;
 	private static Predictor predictor;
 
 	public static void main(String[] args) throws Exception {
 		final ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
 
 		fogNode = ctx.getBean(FogNode.class);
+		membershipList = ctx.getBean(MembershipList.class);
+		predictor = ctx.getBean(Predictor.class);
 
 		final String predType = ctx.getEnvironment().getProperty("predictorType");
 		if(predictorType == "cloud"){

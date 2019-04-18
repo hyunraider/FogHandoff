@@ -2,6 +2,7 @@ package foghandoff.fog;
 
 import java.net.*;
 import java.io.*;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 
+import static foghandoff.fog.FogMessages.ConnectionMessage;
 import static foghandoff.fog.FogMessages.AcceptMessage;
-import static foghandoff.fog.FogMessages.JobMessage;
+import static foghandoff.fog.FogMessages.TaskMessage;
 
-@Component()
+@Component
 @Getter
 @Setter
 @Slf4j
@@ -24,7 +26,13 @@ public class FogNode {
     private ServerSocket serverSocket;
     @Autowired
     private Predictor predictor;
-    int lamportId;
+    @Autowired
+    private MembershipList membershipList;
+    private int lamPort;
+    @Value("${fogNodeId}")
+    private int fogId;
+    private double longitude;
+    private double latitude;
 
     @Scope("prototype")
     // Runnable class to communicate with clients after connection
@@ -32,9 +40,10 @@ public class FogNode {
         private Socket clientSocket;
         private DataInputStream in;
         private DataOutputStream out;
-    	private int lamportId;
-    	private AtomicBoolean isProcessing;
-    	private int currJobId;
+    	private int edgeId;
+        private int edgePort; // only relevant for prediction compoment
+        private int fogId;
+        private boolean active;
 
     	/**
     	* Sends a AcceptMessage to the client to alert it of the job port and their assigned lamport ID
@@ -42,8 +51,8 @@ public class FogNode {
     	protected void sendAcceptMessage() {
     		try {
     			var messageBuilder = AcceptMessage.newBuilder()
-   					.setId()		/* TODO include this fog node's id */
-    				.setAssignedId(this.lamportId);
+   					.setFogId(this.fogId)
+                    .setJobPort(edgePort);
     			byte[] messageBytes = messageBuilder.build().toByteArray();
     			this.out.writeInte(messageBytes.length);
     			this.out.write(messageBytes);
@@ -52,61 +61,68 @@ public class FogNode {
     		}
     	}
 
-        public ClientHandler(Socket clientSocket, int id){
+        /**
+        * In the case of a prepared component, we need to pre-establish our content and wait for a connection to come in on our job port
+        */
+        public ClientHandler(int id, int port) {
+            this.edgeId = id;
+            this.active = false;
+            this.edgePort = port;
+        }
+
+        /**
+        * In the case of brand new connection with no preknowledge, we havee a socket already and we instantly become active
+        */
+        public ClientHandler(Socket clientSocket, int id, DataInputStream in){
             this.clientSocket = clientSocket;
-            this.id = lamportId;
-            this.isProcessing = new AtomicBoolean(false);
+            this.edgeId = id;
+            this.in = in;
+            this.out = new DataOutputStream(clientSocket.getOutputStream());
+            this.active = true;
+            this.edgePort = -1;
         }
 
         @Override
         public void run(){
         	try {
-	            this.out = new DataOutputStream(clientSocket.getOutputStream());
-	            this.in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
+                // Emulate authentication and overhead setup (just sleep for a bit)
+                TimeUnit.SECONDS.sleep(3);
 
-	            sendAcceptMessage();
+                // Case where we did not do a prediction and are just plugging straight ahead.
+                if(this.active) {
+                    sendAcceptMessage();
+                }
+                // Case where we did prediction and thus need to wait for a job task to come in
+                else {
+                    /* TODO for prediction */
+                    sendAcceptMessage();
+                    this.acive = true;
+                }
 
 	            // Read in next message from the socket as a byte array
 	            while(true) {
 		            int length = in.readInt();
 		            byte[] response  = new byte[length];
 		            in.readFully(response);
-		            JobMessage msg = JobMessage.parseFrom(response)
+		            TaskMessage msg = TaskMessage.parseFrom(response)
 
-		            /* TODO some action based off of the job type */
+		            // Do some action based off of the message type
 		            switch(msg.getType()) {
-		            	// Kill Any Existing Job Threads Immediately and Grab their return value
+		            	// Kill Ourselves Immediately
 		            	case KILL:
-		            		// If there is a currently runnning job, kill it and send the results to the client
-		            		if(isProcessing.get()) {
-		            			var messageBuilder = ResultMessage.newBuilder()
-		            				.setId() /* TODO */
-		            				.setJobId(this.currJobId)
-		            				.setTimeStep() /* TODO */
-		            				.setAccelValues();
-		            			byte[] resultMsg = messageBuilder.build().toByteArray();
-		            			out.writeInt(resultMsg.length);
-		            			out.write(resultMsg);
-		            			return;
-		            		}
-		            		// Otherwise directly send an acknowledgement to the edge device and shut down
-		            		else {
-		            			out.sendInt(-1);
-		            			return;
-		            		}
-		 
-			           	// Create a new Job for processing and add its metadata
-		            	case JOB:
-		            		// Read in data for the job
-		            		currJobId = msg.getJobId();
-		            		/* TODO */
-
+		            		out.sendInt(-1);
+                            return;
+			           	// Respond to a ping with some integer indicator
+		            	case PING:
+		            		out.sendInt(420);
 		            	default: throw new RuntimeException("Invalid Message Type");
 		            }
 		        }
 	        } catch(IOException e) {
 	        	// We assume that IOException means that the client is dead and clean up appropriately
-	        	/* TODO */	
+	        	e.printStackTrace();
+                System.out.println("ClienttHandler ran into trouble for client... " + this.edgeId);
+                return;
 	        }
         }
 
@@ -125,16 +141,39 @@ public class FogNode {
     	while(true) {
     		try {
 	        	Socket clientSocket = serverSocket.accept();
-	        	ClientHandler handler = new ClientHandler(clientSocket, lamportId);
-	        	lamportId = lamportId + 1;
+                DataInputStream in = new BufferedInputStream(clientSocket.getInputStream());
+
+                int length = in.readInt();
+                byte[] response = new byte[length];
+                in.readFully(response);
+                ConnectionMessage msg = ConnectionMessage.parseFrom(response);
+
+                // Handle if it is a preparation request
+                if(msg.getType() == PREPARE) {
+                    /* TODO PREDICTION CASE */
+                    this.lamPort = this.lamPort + 1;
+                }
+                // Handle if it is just a new connection request. Start up the client socket right away
+                else if(msg.getType() == NEW) {
+    	        	ClientHandler handler = new ClientHandler(clientSocket, msg.getEdgeId(), in);
+                    Thread handlerThread = new Thread(handler);
+                    handlerThread.start();
+                }
+                // Invalid message type
+                else {
+                    throw new RuntimeException("Invalid Message Type");
+                }
 	        } catch(IOException e) {
 	        	e.printStackTrace();
 	        }	
         }
     }
 
-    public FogNode(@Value("${serverPort}")int port){
+    public FogNode(@Value("${serverPort}")int port, @Value("$serverLat")double latitude, @Value("serverLong")double longitude
+            @Value("${basePort}")int basePort) {
         ServerSocket serverSocket = new ServerSocket(port);
-        lamportId = 0;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.lamPort = basePort;
     }
 }
