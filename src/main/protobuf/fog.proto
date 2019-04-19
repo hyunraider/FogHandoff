@@ -4,6 +4,34 @@ package foghandoff;
 option java_package = "foghandoff.fog";
 option java_outer_classname = "FogMessages";
 
+message AcceptMessage {
+	required string fogId = 1;
+	required int32 jobPort = 2;
+}
+
+message ConnectionMessage {
+	required string edgeId = 1;
+	required OpType type = 2;
+	enum OpType = {
+		NEW = 0;
+		PREPARE = 1;
+	}
+}
+
+message TaskMessagee {
+	required string edgeId = 1;
+	required TaskType type = 2;
+	enum TaskType = {
+		PING = 0;
+		KILL = 1;
+	}
+}
+
+message AllocatedMessage {
+	required string edgeId = 1;
+	required int32 jobPort = 2;
+}
+
 message Location {
 	required double longitude = 1;
 	required double latitude = 2;
@@ -13,30 +41,4 @@ message Velocity {
 	required double x = 1;
 	required double y = 2;
 	required float speed = 3;
-}
-
-message AcceptMessage {
-	required string id = 1;
-	required string assignedId = 2;
-	required int32 jobPort = 3;
-}
-
-message KillMessage {
-	required string id = 1;
-}
-
-message JobMessage {
-	required string id = 1;
-	required string jobId = 2;
-	required JobType type = 3;
-	enum JobType {
-		Job1 = 0;
-		Job2 = 1;
-		Job3 = 2;
-	}
-}
-
-message ResultMessage {
-	required string id = 1;
-	required string jobId = 2;
 }
