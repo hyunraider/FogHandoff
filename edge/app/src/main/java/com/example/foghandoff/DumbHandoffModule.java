@@ -10,6 +10,9 @@ import android.net.wifi.WifiConfiguration;
 
 import java.util.List;
 import java.lang.Math;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DumbHandoffModule implements Runnable {
 
@@ -33,6 +36,8 @@ public class DumbHandoffModule implements Runnable {
         }
 
         scanWifi();
+        String new_ssid = checkTrigger();
+
     }
 
     private void scanWifi() {
