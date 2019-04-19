@@ -12,7 +12,7 @@ message AcceptMessage {
 message ConnectionMessage {
 	required string edgeId = 1;
 	required OpType type = 2;
-	enum OpType = {
+	enum OpType {
 		NEW = 0;
 		PREPARE = 1;
 	}
@@ -21,7 +21,7 @@ message ConnectionMessage {
 message TaskMessagee {
 	required string edgeId = 1;
 	required TaskType type = 2;
-	enum TaskType = {
+	enum TaskType {
 		PING = 0;
 		KILL = 1;
 	}

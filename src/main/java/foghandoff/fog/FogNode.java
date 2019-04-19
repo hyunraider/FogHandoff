@@ -54,7 +54,7 @@ public class FogNode {
    					.setFogId(this.fogId)
                     .setJobPort(edgePort);
     			byte[] messageBytes = messageBuilder.build().toByteArray();
-    			this.out.writeInte(messageBytes.length);
+    			this.out.writeInt(messageBytes.length);
     			this.out.write(messageBytes);
     		} catch(IOException e) {
     			e.printStackTrace();
