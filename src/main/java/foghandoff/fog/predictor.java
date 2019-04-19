@@ -12,10 +12,24 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import static foghandoff.fog.FogMessages.Location;
 import static foghandoff.fog.FogMessages.Velocity;
 
+@Component
+@Getter
+@Setter
+@Slf4j
 public abstract class Predictor {
     public Map<Integer, Location> nearbyFogNodes; // Map between Fog ID and Fog node location.
     public Location currentFogNode;

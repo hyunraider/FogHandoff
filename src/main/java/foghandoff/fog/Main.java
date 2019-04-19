@@ -18,13 +18,14 @@ public class Main {
 
 		fogNode = ctx.getBean(FogNode.class);
 		membershipList = ctx.getBean(MembershipList.class);
-		predictor = ctx.getBean(Predictor.class);
 
 		final String predType = ctx.getEnvironment().getProperty("predictorType");
 		if(predictorType == "cloud"){
             predictor = ctx.getBean(CloudPredictor.class);
         } else if (predictorType == "smart"){
             predictor = ctx.getBean(SmartPredictor.class);
+        } else {
+        	predictor = ctx.getBean(DumbPredictor.class);
         }
 	}
 }

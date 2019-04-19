@@ -5,3 +5,4 @@ signalRadius = 10
 fogNodeId=pancake
 basePort=5000
 serverPort=8000
+predictorType=dumb
