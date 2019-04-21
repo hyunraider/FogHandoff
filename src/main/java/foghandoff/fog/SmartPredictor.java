@@ -31,6 +31,10 @@ public class SmartPredictor extends Predictor {
     }
 
     public List<Integer> getCandidateNodes(Location currentLocation, Velocity v){
+        if(distanceBetween(currentLocation, currentFogNode) < (radius - 0.01)){
+            return new List<Integer>();
+        }
+        
         Location[] probePoints = getProbePoints(currentLocation, v);
         List<Integer> candidates = new ArrayList<Integer>();
         for (Location l : probePoints){
