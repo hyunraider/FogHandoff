@@ -83,8 +83,8 @@ public class MembershipList {
         membersMap.remove(id);
     }
 
-    public synchronized void add(final String id){
-        membersMap.putIfAbsent(id, new Member(id, Instant.now()));
+    public synchronized void add(final String id, Double longitude, Double latitude){
+        membersMap.putIfAbsent(id, new Member(id, longitude, latitude));
     }
 
     public synchronized void add(Member m){
@@ -97,7 +97,6 @@ public class MembershipList {
     */
     public synchronized void addAll(final List<Member> members){
         members.forEach(member -> {
-            member.setLastAlive(Instant.now());
             membersMap.putIfAbsent(member.getId(),member);
         });
     }
