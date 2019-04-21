@@ -45,16 +45,16 @@ public class SmartPredictor extends Predictor {
         double distFromNode = distanceBetween(currentLocation, currentFogNode);
         double testDist = (radius - distFromNode) + radius/100; // should be further away
         
-        double newLatitude = currentLocation.getLatitude() + testDist*v.getX();
-        double newLongitude = currentLocation.getLongitude() + testDist*v.getY();
+        double newLatitude = currentLocation.getLatitude() + testDist*v.getDeltaLatitude();
+        double newLongitude = currentLocation.getLongitude() + testDist*v.getDeltaLongitude();
         Location directlyAhead = Location.newBuilder().setLatitude(newLatitude)
                                                         .setLongitude(newLongitude)
                                                         .build();
         
         double shiftAmount = 0.000483; // TODO change to configurable
 
-        double perpendicularX = v.getX();
-        double perpendicularY = -v.getY();
+        double perpendicularX = v.getDeltaLatitude();
+        double perpendicularY = -v.getDeltaLongitude();
         double mag = Math.sqrt(perpendicularX*perpendicularX + perpendicularY*perpendicularY);
         perpendicularX /= mag;
         perpendicularY /= mag;
@@ -62,14 +62,14 @@ public class SmartPredictor extends Predictor {
         double leftLatitude = newLatitude + shiftAmount*perpendicularX;
         double leftLongitude = newLongitude + shiftAmount*perpendicularY;
         Location shiftLeft = Location.newBuilder().setLatitude(leftLatitude)
-                                                    .setLongitude(leftLongitude)
-                                                    .build();
+                                                  .setLongitude(leftLongitude)
+                                                  .build();
 
         double rightLatitude = newLatitude - shiftAmount*perpendicularX;
         double rightLongitude = newLongitude - shiftAmount*perpendicularY;
         Location shiftRight = Location.newBuilder().setLatitude(rightLatitude)
-                                                    .setLongitude(rightLongitude)
-                                                    .build();
+                                                   .setLongitude(rightLongitude)
+                                                   .build();
         
         return new Location[] {directlyAhead, shiftLeft, shiftRight};
     }

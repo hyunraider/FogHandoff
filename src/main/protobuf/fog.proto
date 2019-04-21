@@ -10,9 +10,10 @@ message Location {
 }
 
 message Velocity {
-	required double x = 1;
-	required double y = 2;
-	required float speed = 3;
+	optional double deltaLatitude = 1;
+	optional double deltaLongitude = 2;
+	optional float speed = 3;
+	optional Location loc = 4;
 }
 
 message AcceptMessage {
