@@ -1,5 +1,5 @@
 syntax = "proto2";
-package foghandoff;
+package fog;
 
 option java_package = "foghandoff.fog";
 option java_outer_classname = "FogMessages";
@@ -10,9 +10,9 @@ message AcceptMessage {
 }
 
 message Velocity {
-	optional double deltaLatitude = 1;
-	optional double deltaLongitude = 2;
-	optional float speed = 3;
+	required double deltaLatitude = 1;
+	required double deltaLongitude = 2;
+	required float speed = 3;
 	optional Location loc = 4;
 }
 
@@ -23,13 +23,16 @@ message ConnectionMessage {
 		NEW = 0;
 		PREPARE = 1;
 	}
+}
 
-message TaskMessagee {
+message TaskMessage {
 	required string edgeId = 1;
 	required TaskType type = 2;
+	optional Velocity velocity = 3;
 	enum TaskType {
 		PING = 0;
 		KILL = 1;
+		INFO = 2;
 	}
 }
 
@@ -43,8 +46,10 @@ message Location {
 	required double latitude = 2;
 }
 
-message Velocity {
-	required double x = 1;
-	required double y = 2;
-	required float speed = 3;
+message CandidateNodes {
+	repeated Candidate candidateList = 1;
+	message Candidate {
+		required string fogId = 1;
+		required int32 fogPort = 2;
+ 	}
 }

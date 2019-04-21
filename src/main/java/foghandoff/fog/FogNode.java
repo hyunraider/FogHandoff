@@ -29,8 +29,7 @@ public class FogNode {
     @Autowired
     private MembershipList membershipList;
     private int lamPort;
-    @Value("${fogNodeId}")
-    private int fogId;
+    private String fogId;
     private double longitude;
     private double latitude;
 
@@ -40,9 +39,9 @@ public class FogNode {
         private Socket clientSocket;
         private DataInputStream in;
         private DataOutputStream out;
-    	private int edgeId;
+    	private String edgeId;
         private int edgePort; // only relevant for prediction compoment
-        private int fogId;
+        private String fogId;
         private boolean active;
 
     	/**
@@ -64,7 +63,7 @@ public class FogNode {
         /**
         * In the case of a prepared component, we need to pre-establish our content and wait for a connection to come in on our job port
         */
-        public ClientHandler(int id, int port) {
+        public ClientHandler(String id, int port) {
             this.edgeId = id;
             this.active = false;
             this.edgePort = port;
@@ -73,7 +72,7 @@ public class FogNode {
         /**
         * In the case of brand new connection with no preknowledge, we havee a socket already and we instantly become active
         */
-        public ClientHandler(Socket clientSocket, int id, DataInputStream in){
+        public ClientHandler(Socket clientSocket, String id, DataInputStream in) throws IOException{
             this.clientSocket = clientSocket;
             this.edgeId = id;
             this.in = in;
@@ -96,7 +95,7 @@ public class FogNode {
                 else {
                     /* TODO for prediction */
                     sendAcceptMessage();
-                    this.acive = true;
+                    this.active = true;
                 }
 
 	            // Read in next message from the socket as a byte array
@@ -104,33 +103,44 @@ public class FogNode {
 		            int length = in.readInt();
 		            byte[] response  = new byte[length];
 		            in.readFully(response);
-		            TaskMessage msg = TaskMessage.parseFrom(response)
+		            TaskMessage msg = TaskMessage.parseFrom(response);
 
 		            // Do some action based off of the message type
 		            switch(msg.getType()) {
 		            	// Kill Ourselves Immediately
 		            	case KILL:
-		            		out.sendInt(-1);
+		            		out.writeInt(-1);
+                            tearDown();
                             return;
 			           	// Respond to a ping with some integer indicator
 		            	case PING:
-		            		out.sendInt(420);
+		            		out.writeInt(420);
+                            break;
+                        // Sending us Directional information
+                        case INFO:
+                            /* TODO */
+                            break;
 		            	default: throw new RuntimeException("Invalid Message Type");
 		            }
 		        }
-	        } catch(IOException e) {
+	        } catch(Exception e) {
 	        	// We assume that IOException means that the client is dead and clean up appropriately
 	        	e.printStackTrace();
                 System.out.println("ClienttHandler ran into trouble for client... " + this.edgeId);
+                tearDown();
                 return;
 	        }
         }
 
-        @After
         public void tearDown(){
-        	this.out.close();
-        	this.in.close();
-            this.clientSocket.close();
+            try {
+            	this.out.close();
+            	this.in.close();
+                this.clientSocket.close();
+            } catch(IOException e) {
+                System.out.println("Error while tearing down structures...");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -141,7 +151,7 @@ public class FogNode {
     	while(true) {
     		try {
 	        	Socket clientSocket = serverSocket.accept();
-                DataInputStream in = new BufferedInputStream(clientSocket.getInputStream());
+                DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
                 int length = in.readInt();
                 byte[] response = new byte[length];
@@ -149,12 +159,12 @@ public class FogNode {
                 ConnectionMessage msg = ConnectionMessage.parseFrom(response);
 
                 // Handle if it is a preparation request
-                if(msg.getType() == PREPARE) {
+                if(msg.getType() == ConnectionMessage.OpType.PREPARE) {
                     /* TODO PREDICTION CASE */
                     this.lamPort = this.lamPort + 1;
                 }
                 // Handle if it is just a new connection request. Start up the client socket right away
-                else if(msg.getType() == NEW) {
+                else if(msg.getType() == ConnectionMessage.OpType.NEW) {
     	        	ClientHandler handler = new ClientHandler(clientSocket, msg.getEdgeId(), in);
                     Thread handlerThread = new Thread(handler);
                     handlerThread.start();
@@ -169,8 +179,8 @@ public class FogNode {
         }
     }
 
-    public FogNode(@Value("${serverPort}")int port, @Value("$serverLat")double latitude, @Value("serverLong")double longitude
-            @Value("${basePort}")int basePort) {
+    public FogNode(@Value("${serverPort}")int port, @Value("$serverLat")double latitude, @Value("serverLong")double longitude,
+            @Value("${basePort}")int basePort) throws IOException {
         ServerSocket serverSocket = new ServerSocket(port);
         this.latitude = latitude;
         this.longitude = longitude;
