@@ -9,19 +9,25 @@ message AcceptMessage {
 	required int32 jobPort = 2;
 }
 
+message Velocity {
+	optional double deltaLatitude = 1;
+	optional double deltaLongitude = 2;
+	optional float speed = 3;
+	optional Location loc = 4;
+}
+
 message ConnectionMessage {
 	required string edgeId = 1;
 	required OpType type = 2;
-	enum OpType = {
+	enum OpType {
 		NEW = 0;
 		PREPARE = 1;
 	}
-}
 
 message TaskMessagee {
 	required string edgeId = 1;
 	required TaskType type = 2;
-	enum TaskType = {
+	enum TaskType {
 		PING = 0;
 		KILL = 1;
 	}

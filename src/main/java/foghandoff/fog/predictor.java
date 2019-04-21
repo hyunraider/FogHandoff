@@ -51,7 +51,7 @@ public abstract class Predictor {
 
     public Boolean inCorrectDirection(Location currentLocation, Location destination, Velocity v){
         double slope = (destination.getLongitude() - currentLocation.getLongitude())/(destination.getLatitude() - destination.getLatitude());
-        return (slope <= ((v.getY()/v.getX()) + 0.01)) || (slope >= ((v.getY()/v.getX()) - 0.01));
+        return (slope <= ((v.getDeltaLongitude()/v.getDeltaLatitude()) + 0.01)) || (slope >= ((v.getDeltaLongitude()/v.getDeltaLatitude()) - 0.01));
     }
 
     public int getNearestNeighbor(Location target){
