@@ -17,7 +17,12 @@ def send_connection_message(sock, edge_id, fog_port):
     send_data(sock, bytearray(conn.SerializeToString()))
     print ("Sent Connection Message to %d" % fog_port)
 
-    length = sock.recv(4)
+    length = b""
+    while len(length) < 4:
+        data = sock.recv(4-len(length))
+        if not data:
+            break
+        length += data
     length = struct.unpack("!i", length)[0]
     total_data = b""
     while len(total_data) < length:
@@ -26,7 +31,7 @@ def send_connection_message(sock, edge_id, fog_port):
             break
         total_data += data
     acceptMsg.ParseFromString(total_data)
-    print(acceptMsg)
+    print("Connection Accepted from %d: %s" % (fog_port, acceptMsg))
 
 def send_task_message(sock, delta_lat, delta_long, location, edge_id, fog_port):
     task = proto.TaskMessage()

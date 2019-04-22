@@ -3,7 +3,7 @@ from networking import *
 
 def dumb_simulation(points, fogs):
     global interval
-    curr_node = None
+    curr_node = -1
     sock = None
     time_dc = 0.0
     working_thread = None
@@ -17,30 +17,32 @@ def dumb_simulation(points, fogs):
             continue
 
         conn = closest_point(fogs, point)
-        if not curr_node:
+        if curr_node == -1:
             curr_node = conn
-            sock = connect_to('localhost', 9000+curr_node)
-            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9000+curr_node])
+            sock = connect_to('localhost', 9050+curr_node)
+            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9050+curr_node])
             working_thread.start()
 
         elif conn != curr_node:
-            print("Switch from %d to %d" % (9000+curr_node, 9000+conn))
-            curr_node = conn
+            print("Switch from %d to %d" % (9050+curr_node, 9050+conn))
             total_alive += time.time() - alive_time
             alive_time = None
-            send_kill_message(sock, "1", 9000+curr_node)
-            sock = connect_to('localhost', 9000+curr_node)
-            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9000+curr_node])
+            send_kill_message(sock, "1", 9050+curr_node)
+            sock.close()
+            curr_node = conn
+            sock = connect_to('localhost', 9050+curr_node)
+            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9050+curr_node])
             working_thread.start()
 
         else:
             if alive_time == None:
                 alive_time = time.time()
-            send_dumb_task_message(sock, "1", 9000+curr_node)
+            working_thread = None
+            send_dumb_task_message(sock, "1", 9050+curr_node)
 
         time.sleep(interval)
     if alive_time:
-        total_time += time.time() - alive_time
+        total_alive += time.time() - alive_time
         alive_time = None
 
     total_time = time.time()-start
@@ -53,7 +55,6 @@ def simulation1():
     start = "40.091919,-88.211532"
     end = "40.094997,-88.213801"
     points = parse_simulation("test")
-    print(5*len(points))
     #draw_map(start, end, fog_locations, "simulation1.html")
     dumb_simulation(points, fog_locations)
 
