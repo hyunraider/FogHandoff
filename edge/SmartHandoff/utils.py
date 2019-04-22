@@ -5,13 +5,18 @@ import struct
 def send_data(sock, message):
     if(sock == None):
         return
-    sock.write(struct.pack("H", len(message)))
-    sock.write(message)
+    sock.send(struct.pack(">I", len(message)))
+    sock.send(message)
 
 def send_connection_message(sock, edge_id):
     conn = proto.ConnectionMessage()
+    conn.edgeId = "9000"
+    conn.type = proto.ConnectionMessage.NEW
     acceptMsg = proto.AcceptMessage()
-    
+    send_data(sock, bytearray(conn.SerializeToString()))
+    print "Sent Connection Message"
+    data = sock.recv(1024)
+    print(data)
 
 def send_task_message(sock, delta_lat, delta_long, location, edge_id):
     task = proto.TaskMessage()
@@ -33,14 +38,16 @@ def send_kill_message(sock, edge_id):
     send_data(sock, bytearray(task.SerializeToString()))
 
 def connect_to(ip_addr, port):
-    sock = socket.socket(socket.AF_INET, sock.SOCK_STREAM)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((ip_addr, port))
     return sock
 
 if __name__ == '__main__':
     # testing
-    sock = connect_to('localhost', 7777)
-    Location loc = proto.Location()
+    sock = connect_to('localhost', 9001)
+    send_connection_message(sock, 1)
+    exit()
+    loc = proto.Location()
     loc.latitude = 20.0
     loc.longitude = 30.0
-    send_task_message(soc, 10.0, 10.0, loc)
+    send_task_message(sock, 10.0, 10.0, loc)
