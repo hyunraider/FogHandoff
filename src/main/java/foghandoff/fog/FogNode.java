@@ -202,13 +202,15 @@ public class FogNode {
     	while(true) {
     		try {
 	        	Socket clientSocket = serverSocket.accept();
+                System.out.println("Accepted Connection");
                 DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
                 int length = in.readInt();
+                System.out.println(length);
                 byte[] response = new byte[length];
                 in.readFully(response);
+                System.out.println("Hello");
                 ConnectionMessage msg = ConnectionMessage.parseFrom(response);
-
                 // Handle if it is a preparation request
                 if(msg.getType() == ConnectionMessage.OpType.PREPARE) {
                     System.out.println("Received request to prepare bandwidth for " + msg.getEdgeId());
@@ -237,7 +239,7 @@ public class FogNode {
                 }
 	        } catch(IOException e) {
 	        	e.printStackTrace();
-	        }	
+	        }
         }
     }
 

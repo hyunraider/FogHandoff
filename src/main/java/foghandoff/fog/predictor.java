@@ -1,7 +1,7 @@
 package foghandoff.fog;
 
 import java.util.*;
-import java.io.*; 
+import java.io.*;
 import java.lang.Math;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -42,12 +42,12 @@ public abstract class Predictor {
         this.currentFogNode = currentFogNode;
     }
 
-    // Returns an array of candidate fog node IDs 
+    // Returns an array of candidate fog node IDs
     public abstract List<Integer> getCandidateNodes(Location currentLocation, Velocity v);
 
-    // Helper functions 
+    // Helper functions
     public double distanceBetween(Location loc1, Location loc2){
-        double longitude = Math.abs(loc1.getLongitude() - loc2.getLongitude()); 
+        double longitude = Math.abs(loc1.getLongitude() - loc2.getLongitude());
         double latitude = Math.abs(loc1.getLatitude() - loc2.getLatitude());
         return Math.hypot(longitude, latitude);
     }
