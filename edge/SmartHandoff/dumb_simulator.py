@@ -7,7 +7,9 @@ def dumb_simulation(points, fogs):
     sock = None
     time_dc = 0.0
     working_thread = None
-
+    start = time.time()
+    total_alive = 0.0
+    alive_time = None
     for point in points:
         if working_thread and working_thread.isAlive():
             print("Blocked")
@@ -16,7 +18,6 @@ def dumb_simulation(points, fogs):
 
         conn = closest_point(fogs, point)
         if not curr_node:
-            start = time.time()
             curr_node = conn
             sock = connect_to('localhost', 9000+curr_node)
             working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9000+curr_node])
@@ -25,15 +26,27 @@ def dumb_simulation(points, fogs):
         elif conn != curr_node:
             print("Switch from %d to %d" % (9000+curr_node, 9000+conn))
             curr_node = conn
+            total_alive += time.time() - alive_time
+            alive_time = None
             send_kill_message(sock, "1", 9000+curr_node)
             sock = connect_to('localhost', 9000+curr_node)
             working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9000+curr_node])
             working_thread.start()
 
         else:
+            if alive_time == None:
+                alive_time = time.time()
             send_dumb_task_message(sock, "1", 9000+curr_node)
 
         time.sleep(interval)
+    if alive_time:
+        total_time += time.time() - alive_time
+        alive_time = None
+
+    total_time = time.time()-start
+    print("Simulation Complete in %.2f secs" % total_time)
+    print("Time connected: %.2f secs, Connectivity: %.2f percent" % (total_alive, total_alive/total_time * 100))
+
 
 def simulation1():
     fog_locations = [(40.092223, -88.211714), (40.093791, -88.211220), (40.094719, -88.212697)]
