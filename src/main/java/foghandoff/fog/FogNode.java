@@ -18,6 +18,7 @@ import static foghandoff.fog.FogMessages.ConnectionMessage;
 import static foghandoff.fog.FogMessages.AcceptMessage;
 import static foghandoff.fog.FogMessages.TaskMessage;
 import static foghandoff.fog.FogMessages.AllocatedMessage;
+import static foghandoff.fog.FogMessages.Velocity;
 
 @Component
 @Getter
@@ -25,7 +26,6 @@ import static foghandoff.fog.FogMessages.AllocatedMessage;
 @Slf4j
 public class FogNode {
     private ServerSocket serverSocket;
-    @Autowired
     private Predictor predictor;
     @Autowired
     private MembershipList membershipList;
@@ -125,6 +125,7 @@ public class FogNode {
 		            switch(msg.getType()) {
 		            	// Kill Ourselves Immediately
 		            	case KILL:
+                            System.out.println("Received message to kill client handler of " + this.edgeId);
 		            		out.writeInt(-1);
                             tearDown();
                             return;
@@ -135,6 +136,9 @@ public class FogNode {
                         // Sending us Directional information
                         case INFO:
                             /*TODO*/
+                            Velocity vel = msg.getVelocity();
+                            System.out.println("Got meta info:");
+                            System.out.println("" + vel.getDeltaLatitude() + "," + vel.getDeltaLongitude());
                             break;
 		            	default: throw new RuntimeException("Invalid Message Type");
 		            }
@@ -167,6 +171,8 @@ public class FogNode {
     	while(true) {
     		try {
                 this.serverSocket = new ServerSocket(this.serverPort);
+                System.out.print("Listening for messages on: " + this.serverPort);
+
 	        	Socket clientSocket = serverSocket.accept();
                 DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
@@ -177,12 +183,14 @@ public class FogNode {
 
                 // Handle if it is a preparation request
                 if(msg.getType() == ConnectionMessage.OpType.PREPARE) {
+                    System.out.println("Received request to prepare bandwidth for " + msg.getEdgeId());
                     ClientHandler handler = new ClientHandler(msg.getEdgeId(), this.lamPort);
                     Thread handlerThread = new Thread(handler);
                     handlerThread.start();
                     DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
 
                     // Started our thread let the original fog node know
+                    System.out.println("Allocated space on port " + this.lamPort);
                     byte[] msgBytes = AllocatedMessage.newBuilder().setEdgeId(msg.getEdgeId()).setJobPort(this.lamPort).build().toByteArray();
                     out.writeInt(msgBytes.length);
                     out.write(msgBytes);
@@ -190,6 +198,7 @@ public class FogNode {
                 }
                 // Handle if it is just a new connection request. Start up the client socket right away
                 else if(msg.getType() == ConnectionMessage.OpType.NEW) {
+                    System.out.println("Received request to coonnect from " + msg.getEdgeId());
     	        	ClientHandler handler = new ClientHandler(clientSocket, msg.getEdgeId(), in);
                     Thread handlerThread = new Thread(handler);
                     handlerThread.start();
@@ -204,8 +213,6 @@ public class FogNode {
         }
     }
 
-    public FogNode(@Value("$serverLat")double latitude, @Value("serverLong")double longitude) throws IOException {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+    // SHut up string
+    public FogNode(){}
 }

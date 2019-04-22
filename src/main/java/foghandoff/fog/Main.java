@@ -28,17 +28,20 @@ public class Main {
 	private static void readInTopo(String hostId) {
 		JSONParser parser = new JSONParser();
 		try {
-			JSONArray jsonArr = (JSONArray) parser.parse(new FileReader("../../resources/fogTopo.json"));
+			JSONArray jsonArr = (JSONArray) parser.parse(new FileReader("../src/main/resources/fogTopo.json"));
 			// Loop through list of fog nodes
 			for(Object o : jsonArr) {
 				JSONObject node = (JSONObject) o;
 				String nodeId = (String)node.get("nodeId");
-				Double longitude = (Double)node.get("longitude");
-				Double latitude = (Double)node.get("latitude");
+				double longitude = Double.parseDouble((String)node.get("longitude"));
+				double latitude = Double.parseDouble((String)node.get("latitude"));
 
 				// Create a member and add it to the membership list if it is not us
 				if(!nodeId.equals(hostId)) {
 					membershipList.add(new Member(nodeId, Location.newBuilder().setLongitude(longitude).setLatitude(latitude).build()));
+				} else {
+					fogNode.setLongitude(longitude);
+					fogNode.setLatitude(latitude);
 				}
 			}
 		} catch(Exception e) {
@@ -53,11 +56,6 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		final ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
 
-		fogNode = ctx.getBean(FogNode.class);
-		fogNode.setFogId(args[0]);
-		fogNode.setLamPort(Integer.parseInt(args[0]) + 1);
-		fogNode.setServerPort(Integer.parseInt(args[0]));
-
 		membershipList = ctx.getBean(MembershipList.class);
 
 		final String predType = ctx.getEnvironment().getProperty("predictorType");
@@ -68,6 +66,12 @@ public class Main {
         } else {
         	predictor = ctx.getBean(DumbPredictor.class);
         }
+
+		fogNode = ctx.getBean(FogNode.class);
+		fogNode.setFogId(args[0]);
+		fogNode.setLamPort(Integer.parseInt(args[0]) + 1);
+		fogNode.setServerPort(Integer.parseInt(args[0]));
+		fogNode.setPredictor(predictor);
 
         // Initialize our topology
         readInTopo(args[0]);

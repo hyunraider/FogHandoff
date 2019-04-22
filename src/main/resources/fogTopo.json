@@ -1,12 +1,12 @@
 [
 	{
 		"nodeId": "5000",
-		"longitude": 15,
-		"latitude": 30,	
+		"longitude": "15",
+		"latitude": "30",	
 	},
 	{
 		"nodeId": "5500",
-		"longitude": 21,
-		"latitude": 45,
+		"longitude": "21",
+		"latitude": "45",
 	}
 ]
