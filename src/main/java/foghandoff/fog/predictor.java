@@ -31,19 +31,19 @@ import static foghandoff.fog.FogMessages.Velocity;
 @Setter
 @Slf4j
 public abstract class Predictor {
-    public Map<Integer, Location> nearbyFogNodes; // Map between Fog ID and Fog node location.
+    public Map<String, Location> nearbyFogNodes; // Map between Fog ID and Fog node location.
     public Location currentFogNode;
 
     // Shut up spring
     public Predictor() {}
 
-    public Predictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes){
+    public Predictor(Location currentFogNode, HashMap<String, Location> nearbyFogNodes){
         this.nearbyFogNodes = nearbyFogNodes;
         this.currentFogNode = currentFogNode;
     }
 
     // Returns an array of candidate fog node IDs
-    public abstract List<Integer> getCandidateNodes(Location currentLocation, Velocity v);
+    public abstract List<String> getCandidateNodes(Location currentLocation, Velocity v);
 
     // Helper functions
     public double distanceBetween(Location loc1, Location loc2){
@@ -60,7 +60,7 @@ public abstract class Predictor {
     public int getNearestNeighbor(Location target){
         double closestDist = -1.0;
         int closestNode = -1;
-        for(Map.Entry<Integer, Location> entry : nearbyFogNodes.entrySet()){
+        for(Map.Entry<String, Location> entry : nearbyFogNodes.entrySet()){
             double dist = distanceBetween(entry.getValue(), target);
             if(closestDist < 0 || dist < closestDist){
                 closestDist = dist;

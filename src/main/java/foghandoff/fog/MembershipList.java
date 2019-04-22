@@ -40,6 +40,17 @@ public class MembershipList {
     }
 
     /**
+    * Return a map of the member ids to their locations
+    */
+    public synchronized Map<String, Location> getAllEntriesMa() {
+        HashMap<String, Location> allMembers = new HashMap<>();
+        for(Map.Entry<String, Member> member : membersMap.entrySet()) {
+            allMembers.put(member.getValue().getId(), member.getValue().getLoc());
+        }
+        return allMembers;
+    }
+
+    /**
     * Get membership fog nodes that are under some threshold of difference to the target edge device
     * @param target: the eedge device of interest wee are looking at
     * @return nodes: List of members that might be next responsible for our target

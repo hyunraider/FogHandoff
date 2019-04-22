@@ -16,7 +16,7 @@ import static foghandoff.fog.FogMessages.Location;
 @AllArgsConstructor
 public class Member implements Serializable {
    private String id;
-   private Location longitude;
+   private Location loc;
    // Needed for Spring to not complain.
    public Member() {}
    public String toString() {

@@ -145,7 +145,7 @@ public class FogNode {
                         case INFO:
                             /* TODO */
                             Velocity vel = msg.getVelocity();
-                            List<Integer> candNodes = predictor.getCandidateNodes(vel.getLoc(), vel);
+                            List<String> candNodes = predictor.getCandidateNodes(vel.getLoc(), vel);
 
                             // Send out a message to the predicted nodes to allocate space
 
