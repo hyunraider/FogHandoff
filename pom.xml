@@ -36,7 +36,7 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.1.1</version>
         <configuration>
-          <finalName>cs425mp3</finalName>
+          <finalName>foghandoff</finalName>
         </configuration>
         <executions>
           <execution>
