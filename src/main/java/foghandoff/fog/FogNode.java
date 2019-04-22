@@ -29,7 +29,6 @@ import static foghandoff.fog.FogMessages.CandidateNodes;
 @Slf4j
 public class FogNode {
     private ServerSocket serverSocket;
-    @Autowired
     private Predictor predictor;
     @Autowired
     private MembershipList membershipList;

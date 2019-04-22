@@ -64,11 +64,11 @@ public class Main {
 
 		final String predType = ctx.getEnvironment().getProperty("predictorType");
 		if(predType == "cloud"){
-            predictor = ctx.getBean(CloudPredictor.class);
+            predictor = new CloudPredictor();
         } else if (predType == "smart"){
-            predictor = ctx.getBean(SmartPredictor.class);
+            predictor = new SmartPredictor();
         } else {
-        	predictor = ctx.getBean(DumbPredictor.class);
+        	predictor = new DumbPredictor();
         }
 
 		fogNode = ctx.getBean(FogNode.class);

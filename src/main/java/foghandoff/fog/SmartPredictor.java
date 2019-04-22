@@ -34,17 +34,15 @@ import static foghandoff.fog.FogMessages.Velocity;
 @Setter
 @Slf4j
 public class SmartPredictor extends Predictor {
+    @Value("${mapsApiKey}")
     private String apiKey;
+    @Value("${geonamesUsername}")
     private String username;
+    @Value("${signalRadius}")
     private double radius;
 
     // So spring shut ups
-    public SmartPredictor(@Value("$mapsApiKey}")String apiKey, @Value("${geonamesUsername}")String username, @Value("${signalRadius}")double radius) { 
-        super(); 
-        this.apiKey = apiKey;
-        this.username = username;
-        this.radius = radius;
-    }
+    public SmartPredictor() { super(); }
 
     public SmartPredictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes, @Value("${mapsApiKey}")String apiKey, @Value("${geonamesUsername}")String username, @Value("${signalRadius}")double radius){
         super(currentFogNode, nearbyFogNodes);
