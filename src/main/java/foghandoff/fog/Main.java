@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import java.io.FileReader;
 
+import static foghandoff.fog.FogMessages.Location;
+
 @Slf4j
 public class Main {
 	
@@ -36,7 +38,7 @@ public class Main {
 
 				// Create a member and add it to the membership list if it is not us
 				if(!nodeId.equals(hostId)) {
-					membershipList.add(new Member(nodeId, longitude, latitude));
+					membershipList.add(new Member(nodeId, Location.newBuilder().setLongitude(longitude).setLatitude(latitude).build()));
 				}
 			}
 		} catch(Exception e) {
@@ -53,6 +55,8 @@ public class Main {
 
 		fogNode = ctx.getBean(FogNode.class);
 		fogNode.setFogId(args[0]);
+		fogNode.setLamPort(Integer.parseInt(args[0]) + 1);
+		fogNode.setServerPort(Integer.parseInt(args[0]));
 
 		membershipList = ctx.getBean(MembershipList.class);
 

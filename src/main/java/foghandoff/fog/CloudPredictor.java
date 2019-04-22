@@ -17,6 +17,10 @@ import static foghandoff.fog.FogMessages.Location;
 import static foghandoff.fog.FogMessages.Velocity;
 
 public class CloudPredictor extends Predictor {
+
+	// Shut up spring
+	public CloudPredictor() { super(); }
+
     public CloudPredictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes){
         super(currentFogNode, nearbyFogNodes);
     }

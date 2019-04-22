@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.time.Instant;
+import static foghandoff.fog.FogMessages.Location;
 
 @Component
 @Getter
@@ -15,8 +16,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Member implements Serializable {
    private String id;
-   private double latitude;
-   private double longitude;
+   private Location longitude;
    // Needed for Spring to not complain.
    public Member() {}
    public String toString() {

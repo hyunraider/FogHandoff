@@ -11,6 +11,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
 
+import static foghandoff.fog.FogMessages.Location;
+
 @Slf4j
 @Getter
 @Setter
@@ -83,8 +85,8 @@ public class MembershipList {
         membersMap.remove(id);
     }
 
-    public synchronized void add(final String id, Double longitude, Double latitude){
-        membersMap.putIfAbsent(id, new Member(id, longitude, latitude));
+    public synchronized void add(final String id, Location loc){
+        membersMap.putIfAbsent(id, new Member(id, loc));
     }
 
     public synchronized void add(Member m){

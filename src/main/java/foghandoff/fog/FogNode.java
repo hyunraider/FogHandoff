@@ -17,6 +17,7 @@ import lombok.var;
 import static foghandoff.fog.FogMessages.ConnectionMessage;
 import static foghandoff.fog.FogMessages.AcceptMessage;
 import static foghandoff.fog.FogMessages.TaskMessage;
+import static foghandoff.fog.FogMessages.AllocatedMessage;
 
 @Component
 @Getter
@@ -29,6 +30,7 @@ public class FogNode {
     @Autowired
     private MembershipList membershipList;
     private int lamPort;
+    private int serverPort;
     private String fogId;
     private double longitude;
     private double latitude;
@@ -93,9 +95,23 @@ public class FogNode {
                 }
                 // Case where we did prediction and thus need to wait for a job task to come in
                 else {
-                    /* TODO for prediction */
-                    sendAcceptMessage();
-                    this.active = true;
+                    ServerSocket serverSock = null;
+                    try {
+                        serverSock = new ServerSocket(this.edgePort);
+                        serverSock.setSoTimeout(10000);
+                        this.clientSocket = serverSock.accept();
+                        this.in = new DataInputStream(new BufferedInputStream(this.clientSocket.getInputStream()));
+                        this.out = new DataOutputStream(this.clientSocket.getOutputStream());
+                        sendAcceptMessage();
+                        this.active = true;
+                    } catch(SocketTimeoutException e) {
+                        // We timed out waiting for a predicted fog node. Kill ourselves...
+                        if(serverSock != null) { serverSock.close(); }
+                        return;
+                    } catch(IOException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                 }
 
 	            // Read in next message from the socket as a byte array
@@ -118,7 +134,7 @@ public class FogNode {
                             break;
                         // Sending us Directional information
                         case INFO:
-                            /* TODO */
+                            /*TODO*/
                             break;
 		            	default: throw new RuntimeException("Invalid Message Type");
 		            }
@@ -150,6 +166,7 @@ public class FogNode {
     protected void startServer() {
     	while(true) {
     		try {
+                this.serverSocket = new ServerSocket(this.serverPort);
 	        	Socket clientSocket = serverSocket.accept();
                 DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
@@ -160,7 +177,15 @@ public class FogNode {
 
                 // Handle if it is a preparation request
                 if(msg.getType() == ConnectionMessage.OpType.PREPARE) {
-                    /* TODO PREDICTION CASE */
+                    ClientHandler handler = new ClientHandler(msg.getEdgeId(), this.lamPort);
+                    Thread handlerThread = new Thread(handler);
+                    handlerThread.start();
+                    DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+
+                    // Started our thread let the original fog node know
+                    byte[] msgBytes = AllocatedMessage.newBuilder().setEdgeId(msg.getEdgeId()).setJobPort(this.lamPort).build().toByteArray();
+                    out.writeInt(msgBytes.length);
+                    out.write(msgBytes);
                     this.lamPort = this.lamPort + 1;
                 }
                 // Handle if it is just a new connection request. Start up the client socket right away
@@ -179,11 +204,8 @@ public class FogNode {
         }
     }
 
-    public FogNode(@Value("${serverPort}")int port, @Value("$serverLat")double latitude, @Value("serverLong")double longitude,
-            @Value("${basePort}")int basePort) throws IOException {
-        ServerSocket serverSocket = new ServerSocket(port);
+    public FogNode(@Value("$serverLat")double latitude, @Value("serverLong")double longitude) throws IOException {
         this.latitude = latitude;
         this.longitude = longitude;
-        this.lamPort = basePort;
     }
 }

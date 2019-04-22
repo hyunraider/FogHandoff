@@ -2,6 +2,4 @@
 geonamesUsername = cs538fog
 mapsApiKey = AIzaSyDMFI9ouWzGqRtlSv8wgQHKSIDreFzAwVo
 signalRadius = 10
-basePort=5000
-serverPort=8000
 predictorType=dumb

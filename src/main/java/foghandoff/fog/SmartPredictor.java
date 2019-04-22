@@ -23,6 +23,9 @@ public class SmartPredictor extends Predictor {
     private String username;
     private double radius;
 
+    // So spring shut ups
+    public SmartPredictor() { super(); }
+
     public SmartPredictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes, @Value("${mapsApiKey}")String apiKey, @Value("${geonamesUsername}")String username, @Value("${signalRadius}")double radius){
         super(currentFogNode, nearbyFogNodes);
         this.apiKey = apiKey;
@@ -32,7 +35,7 @@ public class SmartPredictor extends Predictor {
 
     public List<Integer> getCandidateNodes(Location currentLocation, Velocity v){
         if(distanceBetween(currentLocation, currentFogNode) < (radius - 0.01)){
-            return new List<Integer>();
+            return new ArrayList<Integer>();
         }
         
         Location[] probePoints = getProbePoints(currentLocation, v);

@@ -34,6 +34,9 @@ public abstract class Predictor {
     public Map<Integer, Location> nearbyFogNodes; // Map between Fog ID and Fog node location.
     public Location currentFogNode;
 
+    // Shut up spring
+    public Predictor() {}
+
     public Predictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes){
         this.nearbyFogNodes = nearbyFogNodes;
         this.currentFogNode = currentFogNode;
