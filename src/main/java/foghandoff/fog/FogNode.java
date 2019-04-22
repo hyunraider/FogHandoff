@@ -60,7 +60,11 @@ public class FogNode {
                     .setJobPort(edgePort);
     			byte[] messageBytes = messageBuilder.build().toByteArray();
     			this.out.writeInt(messageBytes.length);
+                this.out.flush();
     			this.out.write(messageBytes);
+                System.out.println(messageBytes);
+                System.out.println("Sent message back!");
+                this.out.flush();
     		} catch(IOException e) {
     			e.printStackTrace();
     		}

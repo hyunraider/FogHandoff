@@ -1,13 +1,13 @@
 import time
 import fog_pb2 as proto
-import googlemaps as gm
 from datetime import datetime
 import pprint
 import geopy.distance
 import numpy as np
+import threading
 from utils import *
 
-interval = 300
+interval = .200
 #Road east of UIUC Arboretum
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -39,7 +39,6 @@ def simulator(start, end, fog, arr):
     dy = [y[i+1]-y[i] for i in range(len(y)-1)]
     dx.append(0)
     dy.append(0)
-    print x, y, dx, dy
 
 def test():
     loc = proto.Location()
@@ -56,20 +55,38 @@ def closest_point(arr, pos):
     return np.argmax(dist)
 
 def dumb_simulation(points, fogs):
+    global interval
     curr_node = None
     sock = None
     time_dc = 0.0
+    working_thread = None
 
     for point in points:
-        conn = closest_point(fog_locations, point)
+        if working_thread and working_thread.isAlive():
+            print("Blocked")
+            time.sleep(interval)
+            continue
+
+        conn = closest_point(fogs, point)
         if not curr_node:
             start = time.time()
             curr_node = conn
             sock = connect_to('localhost', 9000+curr_node)
+            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9000+curr_node])
+            working_thread.start()
 
         elif conn != curr_node:
-            send_kill_message(sock, "9050")
+            print("Switch from %d to %d" % (9000+curr_node, 9000+conn))
+            curr_node = conn
+            send_kill_message(sock, "1", 9000+curr_node)
+            sock = connect_to('localhost', 9000+curr_node)
+            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9000+curr_node])
+            working_thread.start()
 
+        else:
+            send_dumb_task_message(sock, "1", 9000+curr_node)
+
+        time.sleep(interval)
 
 def dumb_simulator1():
     fog_locations = [(40.092223, -88.211714), (40.093791, -88.211220), (40.094719, -88.212697)]
@@ -77,9 +94,7 @@ def dumb_simulator1():
     end = "40.094997,-88.213801"
     points = parse_simulation("test")
 
-
-    conn = closest_point(fog_locations, start)
-    exit()
+    dumb_simulation(points, fog_locations)
 
 if __name__ == '__main__':
     #parse_simulation("test")
