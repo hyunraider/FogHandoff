@@ -36,12 +36,12 @@ public class DumbPredictor extends Predictor {
 	// Shut up spring
 	public DumbPredictor() { super(); }
 
-    public DumbPredictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes){
+    public DumbPredictor(Location currentFogNode, HashMap<String, Location> nearbyFogNodes){
         super(currentFogNode, nearbyFogNodes);
     }
     
-    public List<Integer> getCandidateNodes(Location currentLocation, Velocity v){
+    public List<String> getCandidateNodes(Location currentLocation, Velocity v){
         // TODO 
-        return new ArrayList<Integer>();
+        return new ArrayList<String>();
     }
 }

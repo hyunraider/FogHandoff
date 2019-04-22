@@ -46,8 +46,8 @@ public class Main {
 					fogNode.setLatitude(latitude);
 				}
 			}
-			// Set the predictor's list of membership nodes /* TODO */
-			//predictor.set()
+			// Set the predictor's list of membership nodes
+			predictor.setNearbyFogNodes(membershipList.getAllEntriesMap());
 		} catch(Exception e) {
 			System.out.println("Failed too parse the topology file...");
 			e.printStackTrace();
