@@ -38,12 +38,16 @@ public class Main {
 
 				// Create a member and add it to the membership list if it is not us
 				if(!nodeId.equals(hostId)) {
-					membershipList.add(new Member(nodeId, Location.newBuilder().setLongitude(longitude).setLatitude(latitude).build()));
+					Location loc = Location.newBuilder().setLongitude(longitude).setLatitude(latitude).build();
+					membershipList.add(new Member(nodeId, loc));
+					predictor.setCurrentFogNode(loc);
 				} else {
 					fogNode.setLongitude(longitude);
 					fogNode.setLatitude(latitude);
 				}
 			}
+			// Set the predictor's list of membership nodes /* TODO */
+			//predictor.set()
 		} catch(Exception e) {
 			System.out.println("Failed too parse the topology file...");
 			e.printStackTrace();

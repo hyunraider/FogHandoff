@@ -39,7 +39,12 @@ public class SmartPredictor extends Predictor {
     private double radius;
 
     // So spring shut ups
-    public SmartPredictor() { super(); }
+    public SmartPredictor(@Value("$mapsApiKey}")String apiKey, @Value("${geonamesUsername}")String username, @Value("${signalRadius}")double radius) { 
+        super(); 
+        this.apiKey = apiKey;
+        this.username = username;
+        this.radius = radius;
+    }
 
     public SmartPredictor(Location currentFogNode, HashMap<Integer, Location> nearbyFogNodes, @Value("${mapsApiKey}")String apiKey, @Value("${geonamesUsername}")String username, @Value("${signalRadius}")double radius){
         super(currentFogNode, nearbyFogNodes);

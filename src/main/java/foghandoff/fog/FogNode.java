@@ -3,6 +3,8 @@ package foghandoff.fog;
 import java.net.*;
 import java.io.*;
 import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import static foghandoff.fog.FogMessages.AcceptMessage;
 import static foghandoff.fog.FogMessages.TaskMessage;
 import static foghandoff.fog.FogMessages.AllocatedMessage;
 import static foghandoff.fog.FogMessages.Velocity;
+import static foghandoff.fog.FogMessages.CandidateNodes;
 
 @Component
 @Getter
@@ -26,6 +29,7 @@ import static foghandoff.fog.FogMessages.Velocity;
 @Slf4j
 public class FogNode {
     private ServerSocket serverSocket;
+    @Autowired
     private Predictor predictor;
     @Autowired
     private MembershipList membershipList;
@@ -38,6 +42,7 @@ public class FogNode {
     @Scope("prototype")
     // Runnable class to communicate with clients after connection
     private static class ClientHandler implements Runnable{
+        private Predictor predictor;
         private Socket clientSocket;
         private DataInputStream in;
         private DataOutputStream out;
@@ -65,22 +70,26 @@ public class FogNode {
         /**
         * In the case of a prepared component, we need to pre-establish our content and wait for a connection to come in on our job port
         */
-        public ClientHandler(String id, int port) {
+        public ClientHandler(String id, int port, String fogId, Predictor predictor) {
             this.edgeId = id;
             this.active = false;
             this.edgePort = port;
+            this.fogId = fogId;
+            this.predictor = predictor;
         }
 
         /**
         * In the case of brand new connection with no preknowledge, we havee a socket already and we instantly become active
         */
-        public ClientHandler(Socket clientSocket, String id, DataInputStream in) throws IOException{
+        public ClientHandler(Socket clientSocket, String id, DataInputStream in, String fogId, Predictor predictor) throws IOException{
             this.clientSocket = clientSocket;
             this.edgeId = id;
             this.in = in;
             this.out = new DataOutputStream(clientSocket.getOutputStream());
             this.active = true;
             this.edgePort = -1;
+            this.fogId = fogId;
+            this.predictor = predictor;
         }
 
         @Override
@@ -135,8 +144,23 @@ public class FogNode {
                             break;
                         // Sending us Directional information
                         case INFO:
-                            /*TODO*/
+                            /* TODO */
                             Velocity vel = msg.getVelocity();
+                            List<Integer> candNodes = predictor.getCandidateNodes(vel.getLoc(), vel);
+
+                            // Send out a message to the predicted nodes to allocate space
+
+                            // Construct the tuple based list of id to port
+
+                            // Send a message back to the edge server
+                            /*
+                            var msgBuilder = CandidateNodes.newBuilder()
+                                .setExists(candNodes.size() == 0 ? 0 : 1)
+                                .set(candNodeObjs);
+                            byte[] msgBytes = msgBuilder.build().toByteArray();
+                            out.writeInt(msgBytes.length);
+                            out.write(msgBytes);
+                            */
                             System.out.println("Got meta info:");
                             System.out.println("" + vel.getDeltaLatitude() + "," + vel.getDeltaLongitude());
                             break;
@@ -168,11 +192,15 @@ public class FogNode {
     * Start the server by waiting for connection requests and creating a ClientHandler thread
     */
     protected void startServer() {
+        try {
+            this.serverSocket = new ServerSocket(this.serverPort);
+            System.out.print("Listening for messages on: " + this.serverPort);
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
     	while(true) {
     		try {
-                this.serverSocket = new ServerSocket(this.serverPort);
-                System.out.print("Listening for messages on: " + this.serverPort);
-
 	        	Socket clientSocket = serverSocket.accept();
                 DataInputStream in = new DataInputStream(new BufferedInputStream(clientSocket.getInputStream()));
 
@@ -184,7 +212,7 @@ public class FogNode {
                 // Handle if it is a preparation request
                 if(msg.getType() == ConnectionMessage.OpType.PREPARE) {
                     System.out.println("Received request to prepare bandwidth for " + msg.getEdgeId());
-                    ClientHandler handler = new ClientHandler(msg.getEdgeId(), this.lamPort);
+                    ClientHandler handler = new ClientHandler(msg.getEdgeId(), this.lamPort, this.fogId, this.predictor);
                     Thread handlerThread = new Thread(handler);
                     handlerThread.start();
                     DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
@@ -198,8 +226,8 @@ public class FogNode {
                 }
                 // Handle if it is just a new connection request. Start up the client socket right away
                 else if(msg.getType() == ConnectionMessage.OpType.NEW) {
-                    System.out.println("Received request to coonnect from " + msg.getEdgeId());
-    	        	ClientHandler handler = new ClientHandler(clientSocket, msg.getEdgeId(), in);
+                    System.out.println("Received request to connect from " + msg.getEdgeId());
+    	        	ClientHandler handler = new ClientHandler(clientSocket, msg.getEdgeId(), in, this.fogId, this.predictor);
                     Thread handlerThread = new Thread(handler);
                     handlerThread.start();
                 }
