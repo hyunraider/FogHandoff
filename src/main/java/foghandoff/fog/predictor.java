@@ -57,9 +57,9 @@ public abstract class Predictor {
         return (slope <= ((v.getDeltaLongitude()/v.getDeltaLatitude()) + 0.01)) || (slope >= ((v.getDeltaLongitude()/v.getDeltaLatitude()) - 0.01));
     }
 
-    public int getNearestNeighbor(Location target){
+    public String getNearestNeighbor(Location target){
         double closestDist = -1.0;
-        int closestNode = -1;
+        String closestNode = "";
         for(Map.Entry<String, Location> entry : nearbyFogNodes.entrySet()){
             double dist = distanceBetween(entry.getValue(), target);
             if(closestDist < 0 || dist < closestDist){

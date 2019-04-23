@@ -48,9 +48,10 @@ message Location {
 
 message CandidateNodes {
 	required int32 exists = 1;
-	repeated Candidate candidateList = 2;
-	message Candidate {
-		required string fogId = 1;
-		required int32 fogPort = 2;
- 	}
+	repeated Candidate candidates = 2;
 }
+
+message Candidate {
+	required string fogId = 1;
+	required int32 fogPort = 2;
+ }
