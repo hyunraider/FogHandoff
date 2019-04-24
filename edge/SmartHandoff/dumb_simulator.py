@@ -3,6 +3,7 @@ from networking import *
 
 def dumb_simulation(points, fogs):
     global interval
+    global distance
     curr_node = -1
     sock = None
     time_dc = 0.0
@@ -48,6 +49,7 @@ def dumb_simulation(points, fogs):
     total_time = time.time()-start
     print("Simulation Complete in %.2f secs" % total_time)
     print("Time connected: %.2f secs, Connectivity: %.2f percent" % (total_alive, total_alive/total_time * 100))
+    print("Car went %.2f mph over %.2f miles" % (distance/interval*3.6/1.6, len(points)*5/1000/1.6))
 
 
 def simulation1():

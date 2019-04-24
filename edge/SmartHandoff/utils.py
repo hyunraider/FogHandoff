@@ -5,6 +5,7 @@ import threading
 import time
 
 interval = .200
+distance = 5
 
 def parse_simulation(filename):
     locations = []
@@ -20,8 +21,7 @@ def closest_point(arr, pos):
     dist = []
     for fog in arr:
         dist.append(geopy.distance.distance(fog, pos).m)
-    print(dist)
-    return np.argmax(dist)
+    return np.argmin(dist)
 
 def draw_map(start, end, fog, name):
     lat_list = [x[0] for x in fog]
