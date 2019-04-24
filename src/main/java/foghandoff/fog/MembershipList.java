@@ -42,7 +42,7 @@ public class MembershipList {
     /**
     * Return a map of the member ids to their locations
     */
-    public synchronized Map<String, Location> getAllEntriesMa() {
+    public synchronized Map<String, Location> getAllEntriesMap() {
         HashMap<String, Location> allMembers = new HashMap<>();
         for(Map.Entry<String, Member> member : membersMap.entrySet()) {
             allMembers.put(member.getValue().getId(), member.getValue().getLoc());

@@ -22,6 +22,7 @@ import static foghandoff.fog.FogMessages.TaskMessage;
 import static foghandoff.fog.FogMessages.AllocatedMessage;
 import static foghandoff.fog.FogMessages.Velocity;
 import static foghandoff.fog.FogMessages.CandidateNodes;
+import static foghandoff.fog.FogMessages.Candidate;
 
 @Component
 @Getter
@@ -147,23 +148,26 @@ public class FogNode {
                             break;
                         // Sending us Directional information
                         case INFO:
-                            /* TODO */
                             Velocity vel = msg.getVelocity();
                             List<String> candNodes = predictor.getCandidateNodes(vel.getLoc(), vel);
 
                             // Send out a message to the predicted nodes to allocate space
-
-                            // Construct the tuple based list of id to port
+                            ArrayList<Candidate> candList = new ArrayList<>();
+                            for(int i = 0; i < candNodes.size(); i++) {
+                                var candBuilder = Candidate.newBuilder();
+                                int port = requestAllocation(msg.getEdgeId(), candNodes.get(i));
+                                candBuilder.setFogPort(port).setFogId(candNodes.get(i));
+                                candList.add(candBuilder.build());
+                            }
 
                             // Send a message back to the edge server
-                            /*
                             var msgBuilder = CandidateNodes.newBuilder()
                                 .setExists(candNodes.size() == 0 ? 0 : 1)
-                                .set(candNodeObjs);
+                                .addAllCandidates(candList);
                             byte[] msgBytes = msgBuilder.build().toByteArray();
                             out.writeInt(msgBytes.length);
                             out.write(msgBytes);
-                            */
+                            
                             System.out.println("Got meta info:");
                             System.out.println("" + vel.getDeltaLatitude() + "," + vel.getDeltaLongitude());
                             break;
@@ -187,6 +191,42 @@ public class FogNode {
             } catch(IOException e) {
                 System.out.println("Error while tearing down structures...");
                 e.printStackTrace();
+            }
+        }
+
+        /**
+        * Contact the other fog node to ask them to allocate bandwidtht for the edge. Wait for a job port assignment back
+        * @param edgeId: string denoting the edge that we want to allocate bandwidtth for
+        * @param fogId: string denoting hte fog node that we want to contact
+        * @return port: the returned port, -1 for error
+        */
+        private int requestAllocation(String edgeId, String fogId) {
+            try {
+                Socket s = new Socket(InetAddress.getLocalHost(), Integer.parseInt(fogId));
+                DataInputStream fIn = new DataInputStream(new BufferedInputStream(s.getInputStream()));
+                DataOutputStream fOut = new DataOutputStream(s.getOutputStream());
+
+                // Send prepare requestt
+                var msgBuilder = ConnectionMessage.newBuilder()
+                    .setEdgeId(edgeId)
+                    .setType(ConnectionMessage.OpType.PREPARE);
+                byte[] msg = msgBuilder.build().toByteArray();
+                out.writeInt(msg.length);
+                out.write(msg);
+
+                // Read back allocation request
+                int length = in.readInt();
+                byte[] response = new byte[length];
+                in.readFully(response);
+                AllocatedMessage allocMsg = AllocatedMessage.parseFrom(response);
+                s.close();
+                fIn.close();
+                fOut.close();
+
+                return allocMsg.getJobPort();
+            } catch(IOException e) {
+                e.printStackTrace();
+                return -1;
             }
         }
     }
