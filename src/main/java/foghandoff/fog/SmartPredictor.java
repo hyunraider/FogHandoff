@@ -38,7 +38,7 @@ public class SmartPredictor extends Predictor {
     private String apiKey;
     @Value("${geonamesUsername}")
     private String username;
-    @Value("${signalRadius}")
+    @Value("#{T(Double).parseDouble('${signalRadius}')}")
     private double radius;
 
     // So spring shut ups
