@@ -16,7 +16,7 @@ import static foghandoff.fog.FogMessages.Location;
 
 @Slf4j
 public class Main {
-	
+
 	// Persistent Components for our Fog Node
 	private static FogNode fogNode;
 	private static MembershipList membershipList;
@@ -65,7 +65,7 @@ public class Main {
 	}
 
 	/**
-	* Run as java Main <int fogId> 
+	* Run as java Main <int fogId>
 	*/
 	public static void main(String[] args) throws Exception {
 		final ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
@@ -79,9 +79,9 @@ public class Main {
 		membershipList = ctx.getBean(MembershipList.class);
 
 		final String predType = ctx.getEnvironment().getProperty("predictorType");
-		if(predType == "cloud"){
+		if(predType.equals("cloud")){
             predictor = new CloudPredictor();
-        } else if (predType == "smart"){
+        } else if (predType.equals("smart")){
             predictor = new SmartPredictor();
         } else {
         	predictor = new DumbPredictor();

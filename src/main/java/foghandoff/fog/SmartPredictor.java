@@ -1,7 +1,7 @@
 package foghandoff.fog;
 
 import java.util.*;
-import java.io.*; 
+import java.io.*;
 import java.lang.Math;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -52,11 +52,12 @@ public class SmartPredictor extends Predictor {
     }
 
     public List<String> getCandidateNodes(Location currentLocation, Velocity v){
+        System.out.println("here");
         if(distanceBetween(currentLocation, currentFogNode) < (radius - 0.01)){
             System.out.println("Still in center of node radius");
             return new ArrayList<String>();
         }
-        
+
         Location[] probePoints = getProbePoints(currentLocation, v);
         List<String> candidates = new ArrayList<String>();
         for (Location l : probePoints){
@@ -71,13 +72,13 @@ public class SmartPredictor extends Predictor {
     private Location[] getProbePoints(Location currentLocation, Velocity v){
         double distFromNode = distanceBetween(currentLocation, currentFogNode);
         double testDist = (radius - distFromNode) + radius/100; // should be further away
-        
+
         double newLatitude = currentLocation.getLatitude() + testDist*v.getDeltaLatitude();
         double newLongitude = currentLocation.getLongitude() + testDist*v.getDeltaLongitude();
         Location directlyAhead = Location.newBuilder().setLatitude(newLatitude)
                                                         .setLongitude(newLongitude)
                                                         .build();
-        
+
         double shiftAmount = 0.000483; // TODO change to configurable
 
         double perpendicularX = v.getDeltaLatitude();
@@ -85,7 +86,7 @@ public class SmartPredictor extends Predictor {
         double mag = Math.sqrt(perpendicularX*perpendicularX + perpendicularY*perpendicularY);
         perpendicularX /= mag;
         perpendicularY /= mag;
-        
+
         double leftLatitude = newLatitude + shiftAmount*perpendicularX;
         double leftLongitude = newLongitude + shiftAmount*perpendicularY;
         Location shiftLeft = Location.newBuilder().setLatitude(leftLatitude)
@@ -97,7 +98,7 @@ public class SmartPredictor extends Predictor {
         Location shiftRight = Location.newBuilder().setLatitude(rightLatitude)
                                                    .setLongitude(rightLongitude)
                                                    .build();
-        
+
         return new Location[] {directlyAhead, shiftLeft, shiftRight};
     }
 
@@ -118,10 +119,10 @@ public class SmartPredictor extends Predictor {
         Location snappedLocation = Location.newBuilder().setLongitude(longitude)
                                             .setLatitude(latitude)
                                             .build();
-    
+
         return snappedLocation;
     }
-        
+
 
     private JSONObject getJsonObjectFrom(String request){
         HttpURLConnection conn = null;
@@ -131,7 +132,7 @@ public class SmartPredictor extends Predictor {
             conn = (HttpURLConnection) reqUrl.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
-            
+
             responseCode = conn.getResponseCode();
             if(responseCode != 200){
                 throw new RuntimeException("HttpResponseCode: " + responseCode);
