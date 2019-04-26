@@ -33,19 +33,40 @@ def send_connection_message(sock, edge_id, fog_port):
     acceptMsg.ParseFromString(total_data)
     print("Connection Accepted from %d: %s" % (fog_port, acceptMsg))
 
-def send_task_message(sock, delta_lat, delta_long, location, edge_id, fog_port):
+def send_task_message(sock, delta_lat, delta_long, loc_x, loc_y, edge_id, fog_port):
     task = proto.TaskMessage()
     task.edgeId = edge_id #TODO
     task.type = proto.TaskMessage.INFO
 
     v = proto.Velocity()
-    v.deltaLatitude = delta_lat
-    v.deltaLongitude = delta_long
-    v.loc = location
+    task.velocity.deltaLatitude = delta_lat
+    task.velocity.deltaLongitude = delta_long
+    task.velocity.loc.longitude = loc_y
+    task.velocity.loc.latitude = loc_x
+    task.velocity.speed = 1
 
-    task.velocity = v
     send_data(sock, bytearray(task.SerializeToString()))
+    print("----------------------------------")
     print("Sent Task Message to %d" % fog_port)
+
+    length = b""
+    while len(length) < 4:
+        data = sock.recv(4-len(length))
+        if not data:
+            break
+        length += data
+    length = struct.unpack("!i", length)[0]
+    total_data = b""
+    while len(total_data) < length:
+        data = sock.recv(1024)
+        if not data:
+            break
+        total_data += data
+
+    candidates = proto.CandidateNodes()
+    candidates.ParseFromString(total_data)
+    print("Candidates received: %s" % (candidates.exists))
+
 
 def send_dumb_task_message(sock, edge_id, fog_port):
     task = proto.TaskMessage()

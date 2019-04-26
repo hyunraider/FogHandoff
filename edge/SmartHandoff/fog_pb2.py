@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='fog',
   syntax='proto2',
   serialized_options=_b('\n\016foghandoff.fogB\013FogMessages'),
-  serialized_pb=_b('\n\tfog.proto\x12\x03\x66og\"/\n\rAcceptMessage\x12\r\n\x05\x66ogId\x18\x01 \x02(\t\x12\x0f\n\x07jobPort\x18\x02 \x02(\x05\"d\n\x08Velocity\x12\x15\n\rdeltaLatitude\x18\x01 \x02(\x01\x12\x16\n\x0e\x64\x65ltaLongitude\x18\x02 \x02(\x01\x12\r\n\x05speed\x18\x03 \x02(\x02\x12\x1a\n\x03loc\x18\x04 \x01(\x0b\x32\r.fog.Location\"p\n\x11\x43onnectionMessage\x12\x0e\n\x06\x65\x64geId\x18\x01 \x02(\t\x12+\n\x04type\x18\x02 \x02(\x0e\x32\x1d.fog.ConnectionMessage.OpType\"\x1e\n\x06OpType\x12\x07\n\x03NEW\x10\x00\x12\x0b\n\x07PREPARE\x10\x01\"\x91\x01\n\x0bTaskMessage\x12\x0e\n\x06\x65\x64geId\x18\x01 \x02(\t\x12\'\n\x04type\x18\x02 \x02(\x0e\x32\x19.fog.TaskMessage.TaskType\x12\x1f\n\x08velocity\x18\x03 \x01(\x0b\x32\r.fog.Velocity\"(\n\x08TaskType\x12\x08\n\x04PING\x10\x00\x12\x08\n\x04KILL\x10\x01\x12\x08\n\x04INFO\x10\x02\"3\n\x10\x41llocatedMessage\x12\x0e\n\x06\x65\x64geId\x18\x01 \x02(\t\x12\x0f\n\x07jobPort\x18\x02 \x02(\x05\"/\n\x08Location\x12\x11\n\tlongitude\x18\x01 \x02(\x01\x12\x10\n\x08latitude\x18\x02 \x02(\x01\"s\n\x0e\x43\x61ndidateNodes\x12\x34\n\rcandidateList\x18\x01 \x03(\x0b\x32\x1d.fog.CandidateNodes.Candidate\x1a+\n\tCandidate\x12\r\n\x05\x66ogId\x18\x01 \x02(\t\x12\x0f\n\x07\x66ogPort\x18\x02 \x02(\x05\x42\x1d\n\x0e\x66oghandoff.fogB\x0b\x46ogMessages')
+  serialized_pb=_b('\n\tfog.proto\x12\x03\x66og\"/\n\rAcceptMessage\x12\r\n\x05\x66ogId\x18\x01 \x02(\t\x12\x0f\n\x07jobPort\x18\x02 \x02(\x05\"d\n\x08Velocity\x12\x15\n\rdeltaLatitude\x18\x01 \x02(\x01\x12\x16\n\x0e\x64\x65ltaLongitude\x18\x02 \x02(\x01\x12\r\n\x05speed\x18\x03 \x02(\x02\x12\x1a\n\x03loc\x18\x04 \x01(\x0b\x32\r.fog.Location\"p\n\x11\x43onnectionMessage\x12\x0e\n\x06\x65\x64geId\x18\x01 \x02(\t\x12+\n\x04type\x18\x02 \x02(\x0e\x32\x1d.fog.ConnectionMessage.OpType\"\x1e\n\x06OpType\x12\x07\n\x03NEW\x10\x00\x12\x0b\n\x07PREPARE\x10\x01\"\x91\x01\n\x0bTaskMessage\x12\x0e\n\x06\x65\x64geId\x18\x01 \x02(\t\x12\'\n\x04type\x18\x02 \x02(\x0e\x32\x19.fog.TaskMessage.TaskType\x12\x1f\n\x08velocity\x18\x03 \x01(\x0b\x32\r.fog.Velocity\"(\n\x08TaskType\x12\x08\n\x04PING\x10\x00\x12\x08\n\x04KILL\x10\x01\x12\x08\n\x04INFO\x10\x02\"3\n\x10\x41llocatedMessage\x12\x0e\n\x06\x65\x64geId\x18\x01 \x02(\t\x12\x0f\n\x07jobPort\x18\x02 \x02(\x05\"/\n\x08Location\x12\x11\n\tlongitude\x18\x01 \x02(\x01\x12\x10\n\x08latitude\x18\x02 \x02(\x01\"D\n\x0e\x43\x61ndidateNodes\x12\x0e\n\x06\x65xists\x18\x01 \x02(\x05\x12\"\n\ncandidates\x18\x02 \x03(\x0b\x32\x0e.fog.Candidate\"+\n\tCandidate\x12\r\n\x05\x66ogId\x18\x01 \x02(\t\x12\x0f\n\x07\x66ogPort\x18\x02 \x02(\x05\x42\x1d\n\x0e\x66oghandoff.fogB\x0b\x46ogMessages')
 )
 
 
@@ -325,22 +325,60 @@ _LOCATION = _descriptor.Descriptor(
 )
 
 
-_CANDIDATENODES_CANDIDATE = _descriptor.Descriptor(
-  name='Candidate',
-  full_name='fog.CandidateNodes.Candidate',
+_CANDIDATENODES = _descriptor.Descriptor(
+  name='CandidateNodes',
+  full_name='fog.CandidateNodes',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='fogId', full_name='fog.CandidateNodes.Candidate.fogId', index=0,
+      name='exists', full_name='fog.CandidateNodes.exists', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='candidates', full_name='fog.CandidateNodes.candidates', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=533,
+  serialized_end=601,
+)
+
+
+_CANDIDATE = _descriptor.Descriptor(
+  name='Candidate',
+  full_name='fog.Candidate',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='fogId', full_name='fog.Candidate.fogId', index=0,
       number=1, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='fogPort', full_name='fog.CandidateNodes.Candidate.fogPort', index=1,
+      name='fogPort', full_name='fog.Candidate.fogPort', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -358,38 +396,8 @@ _CANDIDATENODES_CANDIDATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=605,
-  serialized_end=648,
-)
-
-_CANDIDATENODES = _descriptor.Descriptor(
-  name='CandidateNodes',
-  full_name='fog.CandidateNodes',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='candidateList', full_name='fog.CandidateNodes.candidateList', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[_CANDIDATENODES_CANDIDATE, ],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=533,
-  serialized_end=648,
+  serialized_start=603,
+  serialized_end=646,
 )
 
 _VELOCITY.fields_by_name['loc'].message_type = _LOCATION
@@ -398,8 +406,7 @@ _CONNECTIONMESSAGE_OPTYPE.containing_type = _CONNECTIONMESSAGE
 _TASKMESSAGE.fields_by_name['type'].enum_type = _TASKMESSAGE_TASKTYPE
 _TASKMESSAGE.fields_by_name['velocity'].message_type = _VELOCITY
 _TASKMESSAGE_TASKTYPE.containing_type = _TASKMESSAGE
-_CANDIDATENODES_CANDIDATE.containing_type = _CANDIDATENODES
-_CANDIDATENODES.fields_by_name['candidateList'].message_type = _CANDIDATENODES_CANDIDATE
+_CANDIDATENODES.fields_by_name['candidates'].message_type = _CANDIDATE
 DESCRIPTOR.message_types_by_name['AcceptMessage'] = _ACCEPTMESSAGE
 DESCRIPTOR.message_types_by_name['Velocity'] = _VELOCITY
 DESCRIPTOR.message_types_by_name['ConnectionMessage'] = _CONNECTIONMESSAGE
@@ -407,6 +414,7 @@ DESCRIPTOR.message_types_by_name['TaskMessage'] = _TASKMESSAGE
 DESCRIPTOR.message_types_by_name['AllocatedMessage'] = _ALLOCATEDMESSAGE
 DESCRIPTOR.message_types_by_name['Location'] = _LOCATION
 DESCRIPTOR.message_types_by_name['CandidateNodes'] = _CANDIDATENODES
+DESCRIPTOR.message_types_by_name['Candidate'] = _CANDIDATE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 AcceptMessage = _reflection.GeneratedProtocolMessageType('AcceptMessage', (_message.Message,), dict(
@@ -452,19 +460,18 @@ Location = _reflection.GeneratedProtocolMessageType('Location', (_message.Messag
 _sym_db.RegisterMessage(Location)
 
 CandidateNodes = _reflection.GeneratedProtocolMessageType('CandidateNodes', (_message.Message,), dict(
-
-  Candidate = _reflection.GeneratedProtocolMessageType('Candidate', (_message.Message,), dict(
-    DESCRIPTOR = _CANDIDATENODES_CANDIDATE,
-    __module__ = 'fog_pb2'
-    # @@protoc_insertion_point(class_scope:fog.CandidateNodes.Candidate)
-    ))
-  ,
   DESCRIPTOR = _CANDIDATENODES,
   __module__ = 'fog_pb2'
   # @@protoc_insertion_point(class_scope:fog.CandidateNodes)
   ))
 _sym_db.RegisterMessage(CandidateNodes)
-_sym_db.RegisterMessage(CandidateNodes.Candidate)
+
+Candidate = _reflection.GeneratedProtocolMessageType('Candidate', (_message.Message,), dict(
+  DESCRIPTOR = _CANDIDATE,
+  __module__ = 'fog_pb2'
+  # @@protoc_insertion_point(class_scope:fog.Candidate)
+  ))
+_sym_db.RegisterMessage(Candidate)
 
 
 DESCRIPTOR._options = None
