@@ -24,11 +24,21 @@ public class Main {
 
 	/**
 	* Read in topology of the fog network from a YAML config file
+	* @param hostId : String denoting the port and id of this host fog node
+	* @param simName: String denoting the topology in the topofile
 	*/
-	private static void readInTopo(String hostId) {
+	private static void readInTopo(String hostId, String simName) {
 		JSONParser parser = new JSONParser();
 		try {
-			JSONArray jsonArr = (JSONArray) parser.parse(new FileReader("../src/main/resources/fogTopo.json"));
+			JSONObject jsonObj = (JSONObject) parser.parse(new FileReader("../src/main/resources/fogTopo.json"));
+
+			// Get the topology for the specified simulation, exit out with error if invalid simulation name
+			JSONArray jsonArr = (JSONArray)jsonObj.get(simName);
+			if(jsonArr == null) {
+				System.out.println(simName + " is not a valid simulation name or was poorly defined ... ");
+				System.exit(1);
+			}
+
 			// Loop through list of fog nodes
 			for(Object o : jsonArr) {
 				JSONObject node = (JSONObject) o;
@@ -60,6 +70,12 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		final ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringConfig.class);
 
+		// Check args for validity
+		if(args.length != 2) {
+			System.out.println("usage is Main <port> <topologyname>");
+			System.exit(1);
+		}
+
 		membershipList = ctx.getBean(MembershipList.class);
 
 		final String predType = ctx.getEnvironment().getProperty("predictorType");
@@ -78,7 +94,7 @@ public class Main {
 		fogNode.setPredictor(predictor);
 
         // Initialize our topology
-        readInTopo(args[0]);
+        readInTopo(args[0], args[1]);
 
         // Start the fog node
 		fogNode.startServer();
