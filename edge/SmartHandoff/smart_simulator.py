@@ -7,9 +7,8 @@ def get_velocity_vectors(points):
     y = [e[1] for e in points]
     dx = [x[i+1]-x[i] for i in range(len(x)-1)]
     dy = [y[i+1]-y[i] for i in range(len(y)-1)]
-    dx.append(0)
-    dy.append(0)
     normalized = [[dx[i]/math.sqrt(dx[i]**2 + dy[i]**2), dy[i]/math.sqrt(dx[i]**2 + dy[i]**2)] for i in range(len(dx))]
+    normalized.append([0.0,0.0])
     return normalized
 
 def smart_simulation(points, fogs):
