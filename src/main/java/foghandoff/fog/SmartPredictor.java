@@ -60,7 +60,7 @@ public class SmartPredictor extends Predictor {
         Location[] probePoints = getProbePoints(currentLocation, v);
         List<String> candidates = new ArrayList<String>();
         for (Location l : probePoints){
-            System.out.printf("Probe point: %.2f, %.2f\n", probePoints.getLatitude(), probePoints.getLongitude());
+            System.out.printf("Probe point: %.2f, %.2f\n", l.getLatitude(), l.getLongitude());
             Location snappedEndpoint = getSnappedEndPoint(currentLocation, l);
             candidates.add(getNearestNeighbor(snappedEndpoint));
         }
