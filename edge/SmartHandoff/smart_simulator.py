@@ -23,6 +23,7 @@ def smart_simulation(points, fogs):
     start = time.time()
     total_alive = 0.0
     alive_time = None
+    first_node = True
 
     for idx, point in enumerate(points):
         if working_thread and working_thread.isAlive():
@@ -57,7 +58,7 @@ def smart_simulation(points, fogs):
                 if port not in handoffFogs:
                     handoffFogs.append(port)
 
-            print(candidates.candidates)
+            print(candidates)
             handoffFogs = [x if (i in handoffFogs) else None for i, x in enumerate(fogs)]
             handoffFogs[curr_node] = fogs[curr_node]
             handoffNode = closest_point(handoffFogs, point)
