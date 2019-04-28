@@ -41,7 +41,11 @@ public class SmartPredictor extends Predictor {
     public SmartPredictor() { super(); }
 
     public List<String> getCandidateNodes(Location currentLocation, Velocity v){
-        System.out.printf("radius: %f\n", radius);
+        if(currentLocation.getLatitude() == 0.0 || currentLocation.getLongitude() == 0.0){
+            System.out.println("Received dummy end message");
+            return new ArrayList<String>();
+        }
+        
         if(distanceBetween(currentLocation, currentFogNode) < (radius - 0.01)){
             System.out.println("Still in center of node radius");
             return new ArrayList<String>();

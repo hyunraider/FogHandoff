@@ -33,14 +33,15 @@ public class Main {
 			JSONObject jsonObj = (JSONObject) parser.parse(new FileReader("../src/main/resources/fogTopo.json"));
 
 			// Get the topology for the specified simulation, exit out with error if invalid simulation name
-			JSONArray jsonArr = (JSONArray)jsonObj.get(simName);
-			if(jsonArr == null) {
+			JSONObject simObj = (JSONObject) jsonObj.get(simName);
+			if(simObj == null) {
 				System.out.println(simName + " is not a valid simulation name or was poorly defined ... ");
 				System.exit(1);
 			}
 
-			double radius = Double.parseDouble(((JSONObject)jsonObj).get("radius").toString());
+			double radius = Double.parseDouble(simObj.get("radius").toString());
 			predictor.setRadius(radius);
+			JSONArray jsonArr = (JSONArray) simObj.get("nodes");
 			// Loop through list of fog nodes
 			for(Object o : jsonArr) {
 				JSONObject node = (JSONObject) o;

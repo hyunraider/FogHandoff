@@ -1,33 +1,43 @@
 {
-	"radius": 0.0000819672131,
-	"simulation1":[
-		{
-			"nodeId": "9050",
-			"latitude": "-88.211714",
-			"longitude": "40.092223"
-		},
-		{
-			"nodeId": "9051",
-			"latitude": "40.093791",
-			"longitude": "-88.211220",
-		},
-		{
-			"nodeId": "9052",
-			"latitude": "40.094719",
-			"longitude": "-88.212697",
-		}
-	],
+	"simulation1": {
+		"radius": "0.0000819672131",
+		"nodes": [
+			{
+				"nodeId": "9050",
+				"latitude": "-88.211714",
+				"longitude": "40.092223"
+			},
+			{
+				"nodeId": "9051",
+				"latitude": "40.093791",
+				"longitude": "-88.211220",
+			},
+			{
+				"nodeId": "9052",
+				"latitude": "40.094719",
+				"longitude": "-88.212697",
+			}
+		]
+	},
 
-	"simulation2":[
-		{
-			"nodeId": "5500",
-			"longitude": "45",
-			"latitude": "55",
-		},
-		{
-			"nodeId": "5600",
-			"longitude": "45",
-			"latitude": "65",
-		}
-	]
+	"simulation2":{
+		"radius": "0.0000819672131",
+		"nodes": [
+			{
+				"nodeId": "9050",
+				"latitude": "-88.211714",
+				"longitude": "40.092223"
+			},
+			{
+				"nodeId": "9051",
+				"latitude": "40.093791",
+				"longitude": "-88.211220",
+			},
+			{
+				"nodeId": "9052",
+				"latitude": "40.094719",
+				"longitude": "-88.212697",
+			}
+		]
+	}
 }
