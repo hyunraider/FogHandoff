@@ -3,6 +3,7 @@ import geopy.distance
 import gmplot
 import threading
 import time
+import math
 
 interval = .200
 distance = 5
@@ -20,7 +21,10 @@ def parse_simulation(filename):
 def closest_point(arr, pos):
     dist = []
     for fog in arr:
-        dist.append(geopy.distance.distance(fog, pos).m)
+        if not fog:
+            dist.append(math.inf)
+        else:
+            dist.append(geopy.distance.distance(fog, pos).m)
     return np.argmin(dist)
 
 def draw_map(start, end, fog, name):

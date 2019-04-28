@@ -38,15 +38,41 @@ def smart_simulation(points, fogs):
             working_thread.start()
             continue
 
-        print(pos_vel[idx])
-        send_task_message(sock, pos_vel[idx][0], pos_vel[idx][1], point[0], point[1], "1", 9050+curr_node)
-
-        '''
-        #Send pos,vel vectors
         if alive_time == None:
             alive_time = time.time()
         working_thread = None
-        '''
+        candidates = send_task_message(sock, pos_vel[idx][0], pos_vel[idx][1], point[0], point[1], "1", 9050+curr_node)
+
+        handoffFogs = []
+        if candidates.exists == 1:
+            for c in candidates.candidates:
+                port = int(c.fogId)-9050
+                if port not in handoffFogs:
+                    handoffFogs.append(port)
+
+            handoffFogs = [x if (i in handoffFogs) else None for i, x in enumerate(fogs)]
+            handoffFogs[curr_node] = fogs[curr_node]
+            handoffNode = closest_point(handoffFogs, point)
+
+            if handoffNode != curr_node: #Handoff is triggered
+                print("Switch from %d to %d" % (9050+curr_node, 9050+handoffNode))
+                total_alive += time.time() - alive_time
+                alive_time = None
+                send_kill_message(sock, "1", 9050+curr_node)
+                sock.close()
+                curr_node = handoffNode
+                sock = connect_to('localhost', 9050+curr_node)
+                working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9050+curr_node])
+                working_thread.start()
+        time.sleep(interval)
+    if alive_time:
+        total_alive += time.time() - alive_time
+        alive_time = None
+
+    total_time = time.time()-start
+    print("Simulation Complete in %.2f secs" % total_time)
+    print("Time connected: %.2f secs, Connectivity: %.2f percent" % (total_alive, total_alive/total_time * 100))
+    print("Car went %.2f mph over %.2f miles" % (distance/interval*3.6/1.6, len(points)*5/1000/1.6))
 
 
 def simulation1():

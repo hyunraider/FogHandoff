@@ -65,7 +65,7 @@ def send_task_message(sock, delta_lat, delta_long, loc_x, loc_y, edge_id, fog_po
 
     candidates = proto.CandidateNodes()
     candidates.ParseFromString(total_data)
-    print("Candidates received: %s" % (candidates))
+    return candidates
 
 
 def send_dumb_task_message(sock, edge_id, fog_port):
