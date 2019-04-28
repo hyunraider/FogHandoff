@@ -39,6 +39,8 @@ public class Main {
 				System.exit(1);
 			}
 
+			double radius = Double.parseDouble(((JSONObject)jsonObj).get("radius").toString());
+			predictor.setRadius(radius);
 			// Loop through list of fog nodes
 			for(Object o : jsonArr) {
 				JSONObject node = (JSONObject) o;

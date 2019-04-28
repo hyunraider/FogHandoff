@@ -36,10 +36,6 @@ import static foghandoff.fog.FogMessages.Velocity;
 public class SmartPredictor extends Predictor {
     @Value("${mapsApiKey}")
     private String apiKey;
-    @Value("${geonamesUsername}")
-    private String username;
-    @Value("#{T(Double).parseDouble('${signalRadius}')}")
-    private double radius;
 
     // So spring shut ups
     public SmartPredictor() { super(); }
