@@ -57,6 +57,7 @@ def smart_simulation(points, fogs):
                 if port not in handoffFogs:
                     handoffFogs.append(port)
 
+            print(candidates.candidates)
             handoffFogs = [x if (i in handoffFogs) else None for i, x in enumerate(fogs)]
             handoffFogs[curr_node] = fogs[curr_node]
             handoffNode = closest_point(handoffFogs, point)

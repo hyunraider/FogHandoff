@@ -1,11 +1,11 @@
 {
 	"simulation1": {
-		"radius": "0.0000819672131",
+		"radius": "0.001639344262",
 		"nodes": [
 			{
 				"nodeId": "9050",
-				"latitude": "-88.211714",
-				"longitude": "40.092223"
+				"latitude": "40.092223",
+				"longitude": "-88.211714"
 			},
 			{
 				"nodeId": "9051",
