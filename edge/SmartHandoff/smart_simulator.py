@@ -1,5 +1,6 @@
 from utils import *
 from networking import *
+import json
 import math
 
 def get_velocity_vectors(points):
@@ -89,7 +90,25 @@ def simulation1():
     start = "40.091919,-88.211532"
     end = "40.094997,-88.213801"
     points = parse_simulation("test")
-    #draw_map(start, end, fog_locations, "simulation1.html")
+    
     smart_simulation(points, fog_locations)
 
-simulation1()
+def simulate(simu_name, points_file):
+    with open('../../src/main/resources/fogTopo.json', 'r') as file:
+        data = file.read()
+        parsed_json = json.loads(data)
+        simulation_info = parsed_json[simu_name]
+
+        points = parse_simulation(points_file)
+        fog_locations = []
+        for item in simulation_info["nodes"]:
+            fog_locations.append((float(item["latitude"]), float(item["longitude"])))
+        
+        start = str(simulation_info["start_point"]["latitude"]) + "," + str(simulation_info["start_point"]["longitude"])
+        end = str(simulation_info["end_point"]["latitude"]) + "," + str(simulation_info["end_point"]["longitude"])
+        output_file = simu_name + ".html"
+        draw_map(start, end, fog_locations, output_file)
+        smart_simulation(points, fog_locations)
+
+simulate("simulation1", "test")
+simulate("loop_simulation", "loop")
