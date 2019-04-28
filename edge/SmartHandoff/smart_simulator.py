@@ -36,10 +36,17 @@ def smart_simulation(points, fogs):
             sock = connect_to('localhost', 9050+curr_node)
             working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9050+curr_node])
             working_thread.start()
+            time.sleep(interval)
             continue
 
         if alive_time == None:
             alive_time = time.time()
+
+        if idx == len(points)-1: #last case where dx,dy = 0
+            send_dumb_task_message(sock, "1", 9050+curr_node)
+            time.sleep(interval)
+            continue
+
         working_thread = None
         candidates = send_task_message(sock, pos_vel[idx][0], pos_vel[idx][1], point[0], point[1], "1", 9050+curr_node)
 
