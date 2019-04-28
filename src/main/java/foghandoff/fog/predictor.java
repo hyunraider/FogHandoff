@@ -33,6 +33,7 @@ import static foghandoff.fog.FogMessages.Velocity;
 public abstract class Predictor {
     public Map<String, Location> nearbyFogNodes; // Map between Fog ID and Fog node location.
     public Location currentFogNode;
+    public double radius;
 
     // Shut up spring
     public Predictor() {}

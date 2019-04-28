@@ -36,23 +36,12 @@ import static foghandoff.fog.FogMessages.Velocity;
 public class SmartPredictor extends Predictor {
     @Value("${mapsApiKey}")
     private String apiKey = "AIzaSyAgIf9YhLFUikyJaicEzeQUVv---4n7a0Y";
-    @Value("${geonamesUsername}")
-    private String username;
-    //@Value("#{T(Double).parseDouble('${signalRadius}')}")
-    private double radius = 0.0000819672131;
 
     // So spring shut ups
     public SmartPredictor() { super(); }
 
-    public SmartPredictor(Location currentFogNode, HashMap<String, Location> nearbyFogNodes, @Value("${mapsApiKey}")String apiKey, @Value("${geonamesUsername}")String username, @Value("${signalRadius}")double radius){
-        super(currentFogNode, nearbyFogNodes);
-        this.apiKey = apiKey;
-        this.username = username;
-        this.radius = radius;
-    }
-
     public List<String> getCandidateNodes(Location currentLocation, Velocity v){
-        System.out.println("here");
+        System.out.printf("radius: %f\n", radius);
         if(distanceBetween(currentLocation, currentFogNode) < (radius - 0.01)){
             System.out.println("Still in center of node radius");
             return new ArrayList<String>();
