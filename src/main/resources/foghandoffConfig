@@ -1,5 +1,5 @@
 # Put Config Resources Information Here
 geonamesUsername = cs538fog
 mapsApiKey = AIzaSyDMFI9ouWzGqRtlSv8wgQHKSIDreFzAwVo
-signalRadius = 10.0
+signalRadius = 4.95539999978e-08
 predictorType=smart

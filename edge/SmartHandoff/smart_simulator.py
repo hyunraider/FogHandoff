@@ -38,6 +38,7 @@ def smart_simulation(points, fogs):
             working_thread.start()
             continue
 
+        print(pos_vel[idx])
         send_task_message(sock, pos_vel[idx][0], pos_vel[idx][1], point[0], point[1], "1", 9050+curr_node)
 
         '''
