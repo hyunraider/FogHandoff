@@ -35,11 +35,11 @@ import static foghandoff.fog.FogMessages.Velocity;
 @Slf4j
 public class SmartPredictor extends Predictor {
     @Value("${mapsApiKey}")
-    private String apiKey;
+    private String apiKey = "AIzaSyAgIf9YhLFUikyJaicEzeQUVv---4n7a0Y";
     @Value("${geonamesUsername}")
     private String username;
-    @Value("#{T(Double).parseDouble('${signalRadius}')}")
-    private double radius;
+    //@Value("#{T(Double).parseDouble('${signalRadius}')}")
+    private double radius = 0.0000819672131;
 
     // So spring shut ups
     public SmartPredictor() { super(); }
@@ -125,6 +125,7 @@ public class SmartPredictor extends Predictor {
 
 
     private JSONObject getJsonObjectFrom(String request){
+        System.out.println(request);
         HttpURLConnection conn = null;
         int responseCode = 0;
         try{

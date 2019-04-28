@@ -2,18 +2,18 @@
 	"simulation1":[
 		{
 			"nodeId": "9050",
-			"longitude": "40.092223",
 			"latitude": "-88.211714",
+			"longitude": "40.092223"
 		},
 		{
 			"nodeId": "9051",
-			"longitude": "40.093791",
-			"latitude": "-88.211220",
+			"latitude": "40.093791",
+			"longitude": "-88.211220",
 		},
 		{
 			"nodeId": "9052",
-			"longitude": "40.094719",
-			"latitude": "-88.212697",
+			"latitude": "40.094719",
+			"longitude": "-88.212697",
 		}
 	],
 
