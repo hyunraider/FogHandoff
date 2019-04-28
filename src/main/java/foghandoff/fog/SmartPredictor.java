@@ -45,7 +45,7 @@ public class SmartPredictor extends Predictor {
             System.out.println("Received dummy end message");
             return new ArrayList<String>();
         }
-        
+
         if(distanceBetween(currentLocation, currentFogNode) < (radius - 0.01)){
             System.out.println("Still in center of node radius");
             return new ArrayList<String>();
@@ -104,7 +104,14 @@ public class SmartPredictor extends Predictor {
 
         JSONObject result = getJsonObjectFrom(request.toString());
         JSONArray snappedPoints = (JSONArray) result.get("snappedPoints");
-        JSONObject snappedEndpoint = (JSONObject) snappedPoints.get(1);
+
+        JSONObject snappedEndpoint;
+        if (snappedPoints.size() == 1) {
+            snappedEndpoint = (JSONObject) snappedPoints.get(0);
+        }
+        else{
+            snappedEndpoint = (JSONObject) snappedPoints.get(1);
+        }
 
         JSONObject location = (JSONObject) snappedEndpoint.get("location");
         double latitude = (double) location.get("latitude");

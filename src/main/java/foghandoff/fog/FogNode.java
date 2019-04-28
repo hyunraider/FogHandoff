@@ -211,13 +211,13 @@ public class FogNode {
                     .setEdgeId(edgeId)
                     .setType(ConnectionMessage.OpType.PREPARE);
                 byte[] msg = msgBuilder.build().toByteArray();
-                out.writeInt(msg.length);
-                out.write(msg);
+                fOut.writeInt(msg.length);
+                fOut.write(msg);
 
                 // Read back allocation request
-                int length = in.readInt();
+                int length = fIn.readInt();
                 byte[] response = new byte[length];
-                in.readFully(response);
+                fIn.readFully(response);
                 AllocatedMessage allocMsg = AllocatedMessage.parseFrom(response);
                 s.close();
                 fIn.close();
@@ -267,7 +267,7 @@ public class FogNode {
                     byte[] msgBytes = AllocatedMessage.newBuilder().setEdgeId(msg.getEdgeId()).setJobPort(this.lamPort).build().toByteArray();
                     out.writeInt(msgBytes.length);
                     out.write(msgBytes);
-                    this.lamPort = this.lamPort + 1;
+                    this.lamPort = this.lamPort + 100;
                 }
                 // Handle if it is just a new connection request. Start up the client socket right away
                 else if(msg.getType() == ConnectionMessage.OpType.NEW) {
