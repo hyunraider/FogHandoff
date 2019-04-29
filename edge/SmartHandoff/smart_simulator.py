@@ -18,6 +18,7 @@ def smart_simulation(points, fogs):
     pos_vel = get_velocity_vectors(points)
 
     curr_node = -1
+    curr_port = -1
     sock = None
     time_dc = 0.0
     working_thread = None
@@ -34,8 +35,9 @@ def smart_simulation(points, fogs):
         #First boot-up sequence is just distance based
         if curr_node == -1:
             curr_node = closest_point(fogs, point)
-            sock = connect_to('localhost', 9050+curr_node)
-            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9050+curr_node])
+            curr_port = 9050 + curr_node
+            sock = connect_to('localhost', curr_port)
+            working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", curr_port])
             working_thread.start()
             time.sleep(interval)
             continue
@@ -44,34 +46,44 @@ def smart_simulation(points, fogs):
             alive_time = time.time()
 
         if idx == len(points)-1: #last case where dx,dy = 0
-            send_dumb_task_message(sock, "1", 9050+curr_node)
+            send_dumb_task_message(sock, "1", curr_port)
             time.sleep(interval)
             continue
 
         working_thread = None
-        candidates = send_task_message(sock, pos_vel[idx][0], pos_vel[idx][1], point[0], point[1], "1", 9050+curr_node)
+        candidates = send_task_message(sock, pos_vel[idx][0], pos_vel[idx][1], point[0], point[1], "1", curr_port)
 
-        handoffFogs = []
+
         if candidates.exists == 1:
+            ports = {}
+            handoffIndex = []
             for c in candidates.candidates:
-                port = int(c.fogId)-9050
-                if port not in handoffFogs:
-                    handoffFogs.append(port)
+                port = int(c.fogPort)
+                id = int(c.fogId) - 9050
+                if id not in handoffIndex:
+                    handoffIndex.append(id)
+                    ports[id] = port
 
-            print(candidates.candidates)
-            handoffFogs = [x if (i in handoffFogs) else None for i, x in enumerate(fogs)]
+            handoffFogs = [x if (i in handoffIndex) else None for i, x in enumerate(fogs)]
             handoffFogs[curr_node] = fogs[curr_node]
             handoffNode = closest_point(handoffFogs, point)
 
             if handoffNode != curr_node: #Handoff is triggered
-                print("Switch from %d to %d" % (9050+curr_node, 9050+handoffNode))
+                print("Switch from %d to %d" % (curr_port, ports[handoffNode]))
+
                 total_alive += time.time() - alive_time
                 alive_time = None
-                send_kill_message(sock, "1", 9050+curr_node)
+
+                #Killing ports
+                send_kill_message(sock, "1", curr_port)
                 sock.close()
+
+                #Set new curr node and curr port
                 curr_node = handoffNode
-                sock = connect_to('localhost', 9050+curr_node)
-                working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", 9050+curr_node])
+                curr_port = int(ports[handoffNode])
+                print(curr_port)
+                sock = connect_to('localhost', curr_port)
+                working_thread = threading.Thread(target=send_connection_message, args=[sock, "1", curr_port])
                 working_thread.start()
         time.sleep(interval)
     if alive_time:
@@ -84,14 +96,6 @@ def smart_simulation(points, fogs):
     print("Car went %.2f mph over %.2f miles" % (distance/interval*3.6/1.6, len(points)*5/1000/1.6))
 
 
-def simulation1():
-    fog_locations = [(40.092223, -88.211714), (40.093791, -88.211220), (40.094719, -88.212697)]
-    start = "40.091919,-88.211532"
-    end = "40.094997,-88.213801"
-    points = parse_simulation("test")
-    
-    smart_simulation(points, fog_locations)
-
 def simulate(simu_name, points_file):
     with open('../../src/main/resources/fogTopo.json', 'r') as file:
         data = file.read()
@@ -102,7 +106,7 @@ def simulate(simu_name, points_file):
         fog_locations = []
         for item in simulation_info["nodes"]:
             fog_locations.append((float(item["latitude"]), float(item["longitude"])))
-        
+
         start = str(simulation_info["start_point"]["latitude"]) + "," + str(simulation_info["start_point"]["longitude"])
         end = str(simulation_info["end_point"]["latitude"]) + "," + str(simulation_info["end_point"]["longitude"])
         output_file = simu_name + ".html"
@@ -110,4 +114,4 @@ def simulate(simu_name, points_file):
         smart_simulation(points, fog_locations)
 
 simulate("simulation1", "test")
-simulate("loop_simulation", "loop")
+#simulate("loop_simulation", "loop")

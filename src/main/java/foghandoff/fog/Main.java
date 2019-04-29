@@ -92,7 +92,6 @@ public class Main {
 
 		fogNode = ctx.getBean(FogNode.class);
 		fogNode.setFogId(args[0]);
-		fogNode.setLamPort(Integer.parseInt(args[0]) + 100);
 		fogNode.setServerPort(Integer.parseInt(args[0]));
 		fogNode.setPredictor(predictor);
 

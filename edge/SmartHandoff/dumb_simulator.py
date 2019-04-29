@@ -1,5 +1,6 @@
 from utils import *
 from networking import *
+import json
 
 def dumb_simulation(points, fogs):
     global interval
@@ -52,12 +53,21 @@ def dumb_simulation(points, fogs):
     print("Car went %.2f mph over %.2f miles" % (distance/interval*3.6/1.6, len(points)*5/1000/1.6))
 
 
-def simulation1():
-    fog_locations = [(40.092223, -88.211714), (40.093791, -88.211220), (40.094719, -88.212697)]
-    start = "40.091919,-88.211532"
-    end = "40.094997,-88.213801"
-    points = parse_simulation("test")
-    #draw_map(start, end, fog_locations, "simulation1.html")
-    dumb_simulation(points, fog_locations)
+def simulate(simu_name, points_file):
+    with open('../../src/main/resources/fogTopo.json', 'r') as file:
+        data = file.read()
+        parsed_json = json.loads(data)
+        simulation_info = parsed_json[simu_name]
 
-simulation1()
+        points = parse_simulation(points_file)
+        fog_locations = []
+        for item in simulation_info["nodes"]:
+            fog_locations.append((float(item["latitude"]), float(item["longitude"])))
+
+        start = str(simulation_info["start_point"]["latitude"]) + "," + str(simulation_info["start_point"]["longitude"])
+        end = str(simulation_info["end_point"]["latitude"]) + "," + str(simulation_info["end_point"]["longitude"])
+        output_file = simu_name + ".html"
+        draw_map(start, end, fog_locations, output_file)
+        dumb_simulation(points, fog_locations)
+
+simulate("loop_simulation", "loop")
