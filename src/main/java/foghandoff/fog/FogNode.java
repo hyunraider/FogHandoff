@@ -103,18 +103,14 @@ public class FogNode {
         @Override
         public void run(){
         	try {
-                // Emulate authentication and overhead setup (just sleep for a bit)
-                TimeUnit.SECONDS.sleep(3);
-
-                // Case where we did not do a prediction and are just plugging straight ahead.
-                if(this.active) {
-                    sendAcceptMessage();
-                }
-                // Case where we did prediction and thus need to wait for a job task to come in
-                else {
+                int timeSleep = 2;
+                // Case where we did do a prediction and need to wait for task message to come in
+                if(!this.active) {
                     ServerSocket serverSock = null;
                     try {
                         serverSock = new ServerSocket(this.edgePort);
+                        // Emulate authentication and overhead setup (just sleep for a bit)
+                        TimeUnit.SECONDS.sleep(timeSleep);
                         serverSock.setSoTimeout(10000);
                         this.clientSocket = serverSock.accept();
                         this.in = new DataInputStream(new BufferedInputStream(this.clientSocket.getInputStream()));
@@ -131,6 +127,12 @@ public class FogNode {
                         this.preallocatedMap.remove(this.edgeId);
                         return;
                     }
+                    sendAcceptMessage();
+                }
+                // Case where we did not do prediction and just plug straight ahead
+                else {
+                    TimeUnit.SECONDS.sleep(timeSleep);
+                    sendAcceptMessage();
                 }
 
 	            // Read in next message from the socket as a byte array
@@ -173,7 +175,7 @@ public class FogNode {
                             byte[] msgBytes = msgBuilder.build().toByteArray();
                             out.writeInt(msgBytes.length);
                             out.write(msgBytes);
-                            
+
                             System.out.println("Got meta info:");
                             System.out.println("" + vel.getDeltaLatitude() + "," + vel.getDeltaLongitude());
                             break;
@@ -239,7 +241,7 @@ public class FogNode {
     }
 
     /**
-    * Get next lamport id that is available 
+    * Get next lamport id that is available
     */
     protected int getNextLamport() {
         int startPort = this.serverPort + 100;
@@ -285,6 +287,7 @@ public class FogNode {
                                                 .build().toByteArray();
                         out.writeInt(msgBytes.length);
                         out.write(msgBytes);
+                        continue;
                     }
 
                     // Need to create new allocation
