@@ -113,5 +113,5 @@ def simulate(simu_name, points_file):
         draw_map(start, end, fog_locations, output_file)
         smart_simulation(points, fog_locations)
 
-simulate("simulation1", "test")
-#simulate("loop_simulation", "loop")
+#simulate("simulation1", "test")
+simulate("loop_simulation", "loop")

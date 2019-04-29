@@ -29,7 +29,7 @@
 	},
 
 	"loop_simulation":{
-		"radius": "0.0005",
+		"radius": "0.00",
 		"start_point": {
 			"latitude": "40.12738", 
 			"longitude": "-88.22088761924397"
@@ -51,118 +51,63 @@
 			},
 			{
 				"nodeId": "9052",
-				"latitude": "40.147469",
-				"longitude": "-88.244194"
-			},
-			{
-				"nodeId": "9053",
 				"latitude": "40.147834",
 				"longitude": "-88.244339"
 			},
 			{
-				"nodeId": "9054",
+				"nodeId": "9053",
 				"latitude": "40.148256",
 				"longitude": "-88.244564"
 			},
 			{
-				"nodeId": "9055",
-				"latitude": "40.148498",
-				"longitude": "-88.244795"
-			},
-			{
-				"nodeId": "9056",
+				"nodeId": "9054",
 				"latitude": "40.148596",
 				"longitude": "-88.245154"
 			},
 			{
-				"nodeId": "9057",
+				"nodeId": "9055",
 				"latitude": "40.148649",
 				"longitude": "-88.245669"
 			},
 			{
-				"nodeId": "9058",
-				"latitude": "40.148694",
-				"longitude": "-88.246066"
-			},
-			{
-				"nodeId": "9059",
+				"nodeId": "9056",
 				"latitude": "40.148628",
 				"longitude": "-88.246377"
 			},
 			{
-				"nodeId": "9060",
+				"nodeId": "9057",
 				"latitude": "40.148386",
 				"longitude": "-88.246436"
 			},
 			{
-				"nodeId": "9061",
-				"latitude": "40.148435",
-				"longitude": "-88.246463"
-			},
-			{
-				"nodeId": "9062",
-				"latitude": "40.148263",
-				"longitude": "-88.246468"
-			},
-			{
-				"nodeId": "9063",
+				"nodeId": "9058",
 				"latitude": "40.147787",
 				"longitude": "-88.246431"
 			},
 			{
-				"nodeId": "9064",
-				"latitude": "40.147582",
-				"longitude": "-88.246431"
-			},
-			{
-				"nodeId": "9065",
+				"nodeId": "9059",
 				"latitude": "40.147385",
 				"longitude": "-88.246447"
 			},
 			{
-				"nodeId": "9066",
-				"latitude": "40.147131",
-				"longitude": "-88.246452"
-			},
-			{
-				"nodeId": "9067",
+				"nodeId": "9060",
 				"latitude": "40.146889",
 				"longitude": "-88.246393"
 			},
 			{
-				"nodeId": "9068",
-				"latitude": "40.146786",
-				"longitude": "-88.246103"
-			},
-			{
-				"nodeId": "9069",
+				"nodeId": "9061",
 				"latitude": "40.146794",
 				"longitude": "-88.245711"
 			},
 			{
-				"nodeId": "9070",
-				"latitude": "40.146800",
-				"longitude": "-88.245467"
-			},
-			{
-				"nodeId": "9071",
-				"latitude": "40.146770",
-				"longitude": "-88.245263"
-			},
-			{
-				"nodeId": "9072",
+				"nodeId": "9062",
 				"latitude": "40.146784",
 				"longitude": "-88.244898"
 			},
 			{
-				"nodeId": "9073",
+				"nodeId": "9063",
 				"latitude": "40.146786",
 				"longitude": "-88.244517"
-			},
-			{
-				"nodeId": "9074",
-				"latitude": "40.146757",
-				"longitude": "-88.244214"
 			}
 		]
 	}
